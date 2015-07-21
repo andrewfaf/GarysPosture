@@ -1,9 +1,9 @@
 <resources>
 
-    <string name="app_name">Accelerometer Reading</string>
+    <string name="app_name">Gary\'s Posture</string>
     <string name="hello_world">Hello world!</string>
     <string name="menu_settings">Settings</string>
-    <string name="title_activity_main">Accelerometer Reading</string>
+    <string name="title_activity_main">Gary\'s Posture</string>
     <string name="red_string">Red</string>
     <string name="green_string">Green</string>
     <string name="yellow_string">Yellow</string>

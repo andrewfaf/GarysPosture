@@ -40,7 +40,7 @@
             >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.smartapps.accel.MainActivity"/>
+                android:value="com.posture.tooloom.garysposture.MainActivity"/>
         </activity>
     </application>
 
