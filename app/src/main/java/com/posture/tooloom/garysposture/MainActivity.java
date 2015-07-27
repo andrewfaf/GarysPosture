@@ -40,8 +40,14 @@ import java.util.Calendar;
     Calibrated value is not saved to sharedPrefs. - Done
     Labels in graph seem to be swapped. - Done
     Check Boxes showing correct state in Preferences Setting Menu - Done
+    Set a reliable location to save the files - Done
 
-    Change so that file is created when Start pressed and data is appended.
+    Reset accel values when startAccel() is called so that the instantaneous and filtered
+    values are not influenced by the previous session in the case where you stop and then
+    start a new session.
+    Change so that file is created when Start pressed and data is appended,
+    reduces chance of lost data when crash occurs and reduces memory use.
+    Set timestamp to be actual time instead of system tic count
     Make sure file gets closed on exit.
     Change to a service for phones that don't need the screen on.
     Need to be able to select a saved data set and graph it
@@ -70,7 +76,7 @@ public class MainActivity extends Activity implements OnClickListener {
 
     private CSVWriter filecsv;
     private File file;
-    private static final String FILENAME = "acelData";
+    private static final String FILENAME = "GarysPostureData";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -213,8 +219,9 @@ public class MainActivity extends Activity implements OnClickListener {
 
                 lAccelHandler.startAccel();
                 started = true;
-                mHandler.post(mrunnable);
-                vibHandler.post(vibrunnable);
+                // Wait 5 seconds before starting.
+                mHandler.postDelayed(mrunnable,100);
+                vibHandler.postDelayed(vibrunnable, 5000);
 
                 if (sharedPrefs.getBoolean("checkBoxScreen", true)){
                     w.addFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -297,14 +304,16 @@ public class MainActivity extends Activity implements OnClickListener {
 
         Log.d("Gary:", "Write to External SDCard");
 
-//        ArrayList<AccelData> sensorData = lAccelHandler.sensorData;
-//        String text = sensorData.toString();
+//        File extDir = getExternalFilesDir(null);
+        File extDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),"Gary");
+        if(!extDir.exists()){
+            extDir.mkdir();
+        }
 
-        File extDir = getExternalFilesDir(null);
         Calendar calendar = Calendar.getInstance();
         SimpleDateFormat fnametime = new SimpleDateFormat("yyyyMMdd-kkmm");
         String dateString = fnametime.format(calendar.getTime());
-        file = new File(extDir,FILENAME + dateString + ".csv");
+        file = new File(extDir.getAbsolutePath(),FILENAME + dateString + ".csv");
         file.createNewFile();
         filecsv = new CSVWriter(new FileWriter(file));
 

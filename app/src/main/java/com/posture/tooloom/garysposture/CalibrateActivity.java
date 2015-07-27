@@ -43,7 +43,7 @@ public class CalibrateActivity extends Activity {
         btnCalibrate.setEnabled(false);
         cAccelHandler.startAccel();
         delayFlag = false;
-        cHandler.postDelayed(crunnable, 2000);
+        cHandler.postDelayed(crunnable, 5000);
     }
 
     @Override

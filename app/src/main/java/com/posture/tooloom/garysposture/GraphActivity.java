@@ -48,11 +48,11 @@ public class GraphActivity extends Activity {
             long t = sensorData.get(0).getTimestamp();
             XYMultipleSeriesDataset dataset = new XYMultipleSeriesDataset();
 
-            XYSeries zSeries = new XYSeries("Z");
-            XYSeries longtermzSeries = new XYSeries("LongTermZ");
+            XYSeries zSeries = new XYSeries("Raw");
+            XYSeries longtermzSeries = new XYSeries("Filtered");
 
-            XYSeries fwdThreshSeries = new XYSeries("fwdThresh");
-            XYSeries bwdThreshSeries = new XYSeries("bwdThresh");
+            XYSeries fwdThreshSeries = new XYSeries("FwdThresh");
+            XYSeries bwdThreshSeries = new XYSeries("BwdThresh");
 
             for (AccelData data : sensorData) {
                 zSeries.add((data.getTimestamp() - t)/1000, data.getZ());
@@ -66,12 +66,14 @@ public class GraphActivity extends Activity {
             dataset.addSeries(fwdThreshSeries);
             dataset.addSeries(bwdThreshSeries);
 
+
             XYSeriesRenderer zRenderer = new XYSeriesRenderer();
-            zRenderer.setColor(Color.BLUE);
+            zRenderer.setColor(Color.CYAN);
             zRenderer.setPointStyle(PointStyle.CIRCLE);
             zRenderer.setFillPoints(true);
             zRenderer.setLineWidth(3);
             zRenderer.setDisplayChartValues(false);
+
 
             XYSeriesRenderer longtermzRenderer = new XYSeriesRenderer();
             longtermzRenderer.setColor(Color.GREEN);
