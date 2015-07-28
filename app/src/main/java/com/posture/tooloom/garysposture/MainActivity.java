@@ -19,12 +19,8 @@ import android.widget.TextView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
-
-import com.opencsv.CSVWriter;
-
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -41,12 +37,12 @@ import java.util.Calendar;
     Labels in graph seem to be swapped. - Done
     Check Boxes showing correct state in Preferences Setting Menu - Done
     Set a reliable location to save the files - Done
+    Change so that file is created when Start pressed and data is appended,
+    reduces chance of lost data when crash occurs and reduces memory use. - Under Test
 
     Reset accel values when startAccel() is called so that the instantaneous and filtered
     values are not influenced by the previous session in the case where you stop and then
     start a new session.
-    Change so that file is created when Start pressed and data is appended,
-    reduces chance of lost data when crash occurs and reduces memory use.
     Set timestamp to be actual time instead of system tic count
     Make sure file gets closed on exit.
     Change to a service for phones that don't need the screen on.
@@ -67,15 +63,14 @@ public class MainActivity extends Activity implements OnClickListener {
     public static double calibratedZ = 0;
     private SharedPreferences sharedPrefs;
     private SharedPreferences.OnSharedPreferenceChangeListener preflistener;
-    public static char oriented = 0;
     private static float brightness = 0.1f;
     private AccelHandler lAccelHandler;
     Handler mHandler, vibHandler;
     public ArrayList<AccelData> sensorData;
     private boolean started = false;
 
-    private CSVWriter filecsv;
-    private File file;
+    FileOutputStream fos;
+
     private static final String FILENAME = "GarysPostureData";
 
     @Override
@@ -193,8 +188,15 @@ public class MainActivity extends Activity implements OnClickListener {
             long[] vpatternb = {0, 400, 200, 400, 0};
 
                 long timestamp = System.currentTimeMillis();
-                AccelData data = new AccelData(timestamp, lAccelHandler.getZ(), lAccelHandler.getLongTermAverage());
+            AccelData data = new AccelData(timestamp, lAccelHandler.getZ(), lAccelHandler.getLongTermAverage());
                 sensorData.add(data);
+
+            String text = data.toCsv();
+            try {
+                fos.write(text.getBytes());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
             Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
             if ((lAccelHandler.getLongTermAverage() > fwdThreshold/2) && vibrateFwdOn) {
@@ -216,7 +218,11 @@ public class MainActivity extends Activity implements OnClickListener {
                 btnStart.setEnabled(false);
                 btnStop.setEnabled(true);
                 btnGraph.setEnabled(false);
-
+                try {
+                    createFile();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 lAccelHandler.startAccel();
                 started = true;
                 // Wait 5 seconds before starting.
@@ -252,12 +258,10 @@ public class MainActivity extends Activity implements OnClickListener {
                 }
 
                 try {
-//                    createFile(v);
-                    createFile();
+                    fos.close();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
                 break;
             case R.id.btnGraph:
                 Intent i = new Intent(this, GraphActivity.class);
@@ -281,56 +285,41 @@ public class MainActivity extends Activity implements OnClickListener {
         return false;
     }
 
-//    public void createFile(View v) throws IOException {
-        public void createFile() throws IOException {
-        if (!checkExternalStorage()) {
-//            ArrayList<AccelData> sensorData = lAccelHandler.sensorData;
-            Log.d("Gary:", "Write to Internal SDCard");
-
-            Calendar calendar = Calendar.getInstance();
-            SimpleDateFormat fnametime = new SimpleDateFormat("yyyyMMdd-kkmm");
-            String dateString = fnametime.format(calendar.getTime());
-
-            FileOutputStream fos = openFileOutput(FILENAME + dateString + ".csv", MODE_PRIVATE);
-            for(int i = 0; i < sensorData.size(); i++) {
-                String text = sensorData.get(i).toCsv();
-                fos.write(text.getBytes());
-            }
-            fos.close();
-            Toast.makeText(this, "File written to Internal Disk: ", Toast.LENGTH_LONG).show();
-
-            return;
-        }
-
-        Log.d("Gary:", "Write to External SDCard");
-
-//        File extDir = getExternalFilesDir(null);
-        File extDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),"Gary");
-        if(!extDir.exists()){
-            extDir.mkdir();
-        }
-
+    public void createFile() throws IOException {
         Calendar calendar = Calendar.getInstance();
         SimpleDateFormat fnametime = new SimpleDateFormat("yyyyMMdd-kkmm");
         String dateString = fnametime.format(calendar.getTime());
-        file = new File(extDir.getAbsolutePath(),FILENAME + dateString + ".csv");
-        file.createNewFile();
-        filecsv = new CSVWriter(new FileWriter(file));
+        File extDir;
+
+        if (checkExternalStorage()) {
+            extDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),"Gary");
+            if(!extDir.exists()){
+                extDir.mkdir();
+            }
+
+            fos = new FileOutputStream(extDir + "/" + FILENAME + dateString + ".csv",true);
+        } else{
+            extDir = new File(getFilesDir(),FILENAME + dateString + ".csv");
+            fos = new FileOutputStream(extDir);
+        }
+
 
         // Write Header
-        String csvText = "Timestamp#Z#AvgZ";
-        String[] entries = csvText.split("#");
-        filecsv.writeNext(entries);
+        String csvText = "Timestamp,Z,AvgZ\n";
+        fos.write(csvText.getBytes());
+//        fos.close();
+        Toast.makeText(this, "File created : " + extDir, Toast.LENGTH_LONG).show();
+/*
 
-        // Write Data
-        for (int i = 0; i < sensorData.size(); i++){
-            csvText = "" + sensorData.get(i).getTimestamp() + '#'+ sensorData.get(i).getZ() + '#'+sensorData.get(i).getLongtermZ();
-            entries = csvText.split("#");
-            filecsv.writeNext(entries);
+        for(int i = 0; i < sensorData.size(); i++) {
+            String text = sensorData.get(i).toCsv();
+            fos.write(text.getBytes());
         }
-        filecsv.close();
+        fos.close();
 
-        Toast.makeText(this, "File written to External Disk: " + extDir, Toast.LENGTH_LONG).show();
+
+        Toast.makeText(this, "File written to : " + extDir, Toast.LENGTH_LONG).show();
+*/
 
     }
 }
