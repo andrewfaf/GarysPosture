@@ -155,7 +155,8 @@ public class MainActivity extends Activity implements OnClickListener {
         Log.d("Gary:", "MainActivity onPause");
         if (started) {
             try {
-                createFile();
+                // todo When this gets turned into a service this may be a problem
+                fos.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -168,6 +169,13 @@ public class MainActivity extends Activity implements OnClickListener {
         lAccelHandler.stopAccel();
         mHandler.removeCallbacks(mrunnable);
         mHandler.removeCallbacks(vibrunnable);
+        if(started){
+            try {
+                fos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
    }
 
     private Runnable mrunnable = new Runnable() {
