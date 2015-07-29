@@ -27,8 +27,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 
-/* To Do
-
+/* Done
     Save Data - Done for Saving to SDCard
     Save Data in csv format - Done
     Change Calibrate to a button in the settings/Action Bar? - Done
@@ -38,19 +37,19 @@ import java.util.Calendar;
     Check Boxes showing correct state in Preferences Setting Menu - Done
     Set a reliable location to save the files - Done
     Change so that file is created when Start pressed and data is appended,
-    reduces chance of lost data when crash occurs and reduces memory use. - Under Test
+    reduces chance of lost data when crash occurs and reduces memory use. - Done
+    Make sure file gets closed on exit. - Done
     Set timestamp to be actual time instead of system tic count - Done
+*/
 
-    Reset accel values when startAccel() is called so that the instantaneous and filtered
-    values are not influenced by the previous session in the case where you stop and then
-    start a new session.
-    Make sure file gets closed on exit.
-    Change to a service for phones that don't need the screen on.
-    Need to be able to select a saved data set and graph it
-    Need to be able to select a group of data sets (or one) and email it for review
-    Need to be able to select a group of data sets (or one) and email csv formatted versions
-
-
+/* To Do
+todo    Reset accel values when startAccel() is called so that the instantaneous and filtered
+        values are not influenced by the previous session in the case
+        where you stop and then start a new session.
+todo    Change to a service for phones that don't need the screen on.
+todo    Need to be able to select a saved data set and graph it
+todo    Need to be able to select a group of data sets (or one) and email csv formatted versions
+todo    Drop Box or Google Drive the files
 */
 
 public class MainActivity extends Activity implements OnClickListener {
