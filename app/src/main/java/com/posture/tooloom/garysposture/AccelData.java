@@ -1,6 +1,8 @@
 package com.posture.tooloom.garysposture;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class AccelData implements Serializable {
 	private long timestamp;
@@ -32,7 +34,13 @@ public class AccelData implements Serializable {
 	}
 	public String toCsv()
 {
-	return (timestamp+","+z+","+longtermz+"\n");
+	SimpleDateFormat timeformat = new SimpleDateFormat("hh:mm:ss a");
+	long currentTime = System.currentTimeMillis();
+
+	Date resultDate = new Date(currentTime);
+	String timeString  = timeformat.format(resultDate);
+
+	return (timeString+","+z+","+longtermz+"\n");
 }
 
 }

@@ -39,11 +39,11 @@ import java.util.Calendar;
     Set a reliable location to save the files - Done
     Change so that file is created when Start pressed and data is appended,
     reduces chance of lost data when crash occurs and reduces memory use. - Under Test
+    Set timestamp to be actual time instead of system tic count - Done
 
     Reset accel values when startAccel() is called so that the instantaneous and filtered
     values are not influenced by the previous session in the case where you stop and then
     start a new session.
-    Set timestamp to be actual time instead of system tic count
     Make sure file gets closed on exit.
     Change to a service for phones that don't need the screen on.
     Need to be able to select a saved data set and graph it
@@ -62,7 +62,6 @@ public class MainActivity extends Activity implements OnClickListener {
     public static int bwdThreshold = 5;
     public static double calibratedZ = 0;
     private SharedPreferences sharedPrefs;
-    private SharedPreferences.OnSharedPreferenceChangeListener preflistener;
     private static float brightness = 0.1f;
     private AccelHandler lAccelHandler;
     Handler mHandler, vibHandler;
@@ -101,13 +100,19 @@ public class MainActivity extends Activity implements OnClickListener {
         sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         calibratedZ = (double)sharedPrefs.getFloat("CalibratedZ",0.0f);
 
-        preflistener = new SharedPreferences.OnSharedPreferenceChangeListener() {
-            @Override
+        SharedPreferences.OnSharedPreferenceChangeListener preflistener =
+                new SharedPreferences.OnSharedPreferenceChangeListener() {
+
+                    @Override
             public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
                 vibrateFwdOn = sharedPrefs.getBoolean("checkBoxFwd", true);
                 vibrateBwdOn = sharedPrefs.getBoolean("checkBoxBwd", true);
-                Log.d("Gary:", "EditTextFwdThresh = " + Integer.parseInt(sharedPrefs.getString("EditTextFwdThresh", "5")));
-                Log.d("Gary:", "EditTextBwdThresh = " + Integer.parseInt(sharedPrefs.getString("EditTextBwdThresh", "5")));
+
+                Log.d("Gary:", "EditTextFwdThresh = " +
+                        Integer.parseInt(sharedPrefs.getString("EditTextFwdThresh", "5")));
+
+                Log.d("Gary:", "EditTextBwdThresh = " +
+                        Integer.parseInt(sharedPrefs.getString("EditTextBwdThresh", "5")));
 
                 fwdThreshold = Integer.parseInt(sharedPrefs.getString("EditTextFwdThresh", "5"));
                 bwdThreshold = Integer.parseInt(sharedPrefs.getString("EditTextBwdThresh", "5"));
@@ -195,8 +200,10 @@ public class MainActivity extends Activity implements OnClickListener {
             long[] vpatternf = {0, 200, 200, 200, 200, 200, 0};
             long[] vpatternb = {0, 400, 200, 400, 0};
 
-                long timestamp = System.currentTimeMillis();
-            AccelData data = new AccelData(timestamp, lAccelHandler.getZ(), lAccelHandler.getLongTermAverage());
+            long timestamp = System.currentTimeMillis();
+            AccelData data = new AccelData(timestamp, lAccelHandler.getZ(),
+                    lAccelHandler.getLongTermAverage());
+
                 sensorData.add(data);
 
             String text = data.toCsv();
@@ -283,12 +290,15 @@ public class MainActivity extends Activity implements OnClickListener {
     }
     public boolean checkExternalStorage(){
         String state = Environment.getExternalStorageState();
-        if (state.equals(Environment.MEDIA_MOUNTED)){
-            return true;
-        } else if (state.equals(Environment.MEDIA_MOUNTED_READ_ONLY)){
-            Toast.makeText(this, "External Storage is read-only", Toast.LENGTH_LONG).show();
-        } else {
-            Toast.makeText(this, "External Storage is unavailable", Toast.LENGTH_LONG).show();
+        switch (state) {
+            case Environment.MEDIA_MOUNTED:
+                return true;
+            case Environment.MEDIA_MOUNTED_READ_ONLY:
+                Toast.makeText(this, "External Storage is read-only", Toast.LENGTH_LONG).show();
+                break;
+            default:
+                Toast.makeText(this, "External Storage is unavailable", Toast.LENGTH_LONG).show();
+                break;
         }
         return false;
     }
@@ -297,10 +307,13 @@ public class MainActivity extends Activity implements OnClickListener {
         Calendar calendar = Calendar.getInstance();
         SimpleDateFormat fnametime = new SimpleDateFormat("yyyyMMdd-kkmm");
         String dateString = fnametime.format(calendar.getTime());
+
         File extDir;
 
         if (checkExternalStorage()) {
-            extDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),"Gary");
+            extDir = new File(Environment.getExternalStoragePublicDirectory(
+                    Environment.DIRECTORY_DOWNLOADS),"Gary");
+
             if(!extDir.exists()){
                 extDir.mkdir();
             }
@@ -315,19 +328,7 @@ public class MainActivity extends Activity implements OnClickListener {
         // Write Header
         String csvText = "Timestamp,Z,AvgZ\n";
         fos.write(csvText.getBytes());
-//        fos.close();
         Toast.makeText(this, "File created : " + extDir, Toast.LENGTH_LONG).show();
-/*
-
-        for(int i = 0; i < sensorData.size(); i++) {
-            String text = sensorData.get(i).toCsv();
-            fos.write(text.getBytes());
-        }
-        fos.close();
-
-
-        Toast.makeText(this, "File written to : " + extDir, Toast.LENGTH_LONG).show();
-*/
 
     }
 }
