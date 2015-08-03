@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 
 
 /* Done
@@ -40,6 +41,7 @@ import java.util.Calendar;
     reduces chance of lost data when crash occurs and reduces memory use. - Done
     Make sure file gets closed on exit. - Done
     Set timestamp to be actual time instead of system tic count - Done
+    Graph shows time on X axis - Done
 */
 
 /* To Do
@@ -199,8 +201,10 @@ public class MainActivity extends Activity implements OnClickListener {
             long[] vpatternf = {0, 200, 200, 200, 200, 200, 0};
             long[] vpatternb = {0, 400, 200, 400, 0};
 
-            long timestamp = System.currentTimeMillis();
-            AccelData data = new AccelData(timestamp, lAccelHandler.getZ(),
+            long currentTime = System.currentTimeMillis();
+            Date resultDate = new Date(currentTime);
+
+            AccelData data = new AccelData(resultDate, lAccelHandler.getZ(),
                     lAccelHandler.getLongTermAverage());
 
                 sensorData.add(data);

@@ -5,7 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class AccelData implements Serializable {
-	private long timestamp;
+	private Date timestamp;
 	private double x;
 	private double y;
 	private double z;
@@ -13,12 +13,12 @@ public class AccelData implements Serializable {
 	
 	
 	
-	public AccelData(long timestamp, double z, double longtermz) {
+	public AccelData(Date timestamp, double z, double longtermz) {
 		this.timestamp = timestamp;
 		this.z = z;
 		this.longtermz = longtermz;
 	}
-	public long getTimestamp() {
+	public Date getTimestamp() {
 		return timestamp;
 	}
 	public double getZ() {

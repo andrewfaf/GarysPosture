@@ -10,8 +10,8 @@ import android.widget.LinearLayout;
 
 import org.achartengine.ChartFactory;
 import org.achartengine.chart.PointStyle;
+import org.achartengine.model.TimeSeries;
 import org.achartengine.model.XYMultipleSeriesDataset;
-import org.achartengine.model.XYSeries;
 import org.achartengine.renderer.XYMultipleSeriesRenderer;
 import org.achartengine.renderer.XYSeriesRenderer;
 
@@ -45,35 +45,8 @@ public class GraphActivity extends Activity {
         float val = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 18, metrics);
 
         if (sensorData != null || sensorData.size() > 0) {
-            long t = sensorData.get(0).getTimestamp();
             XYMultipleSeriesDataset dataset = new XYMultipleSeriesDataset();
-
-            XYSeries zSeries = new XYSeries("Raw");
-            XYSeries longtermzSeries = new XYSeries("Filtered");
-
-            XYSeries fwdThreshSeries = new XYSeries("FwdThresh");
-            XYSeries bwdThreshSeries = new XYSeries("BwdThresh");
-
-            for (AccelData data : sensorData) {
-                zSeries.add((data.getTimestamp() - t)/1000, data.getZ());
-                longtermzSeries.add((data.getTimestamp() - t)/1000, data.getLongtermZ());
-                fwdThreshSeries.add((data.getTimestamp() - t)/1000,MainActivity.fwdThreshold/2 );
-                bwdThreshSeries.add((data.getTimestamp() - t)/1000,-MainActivity.bwdThreshold/2 );
-            }
-
-            dataset.addSeries(zSeries);
-            dataset.addSeries(longtermzSeries);
-            dataset.addSeries(fwdThreshSeries);
-            dataset.addSeries(bwdThreshSeries);
-
-
-            XYSeriesRenderer zRenderer = new XYSeriesRenderer();
-            zRenderer.setColor(Color.CYAN);
-            zRenderer.setPointStyle(PointStyle.CIRCLE);
-            zRenderer.setFillPoints(true);
-            zRenderer.setLineWidth(3);
-            zRenderer.setDisplayChartValues(false);
-
+            XYMultipleSeriesRenderer renderer = new XYMultipleSeriesRenderer();
 
             XYSeriesRenderer longtermzRenderer = new XYSeriesRenderer();
             longtermzRenderer.setColor(Color.GREEN);
@@ -82,36 +55,29 @@ public class GraphActivity extends Activity {
             longtermzRenderer.setLineWidth(5);
             longtermzRenderer.setDisplayChartValues(false);
 
-            XYSeriesRenderer fwdThresholdRenderer = new XYSeriesRenderer();
-            fwdThresholdRenderer.setColor(Color.RED);
-            fwdThresholdRenderer.setPointStyle(PointStyle.POINT);
-            fwdThresholdRenderer.setFillPoints(true);
-            fwdThresholdRenderer.setLineWidth(3);
-            fwdThresholdRenderer.setDisplayChartValues(false);
+            renderer.addSeriesRenderer(longtermzRenderer);
+            renderer.setClickEnabled(true);
+            renderer.setSelectableBuffer(20);
+            renderer.setPanEnabled(true);
 
-            XYSeriesRenderer bwdThresholdRenderer = new XYSeriesRenderer();
-            bwdThresholdRenderer.setColor(Color.RED);
-            bwdThresholdRenderer.setPointStyle(PointStyle.POINT);
-            bwdThresholdRenderer.setFillPoints(true);
-            bwdThresholdRenderer.setLineWidth(3);
-            bwdThresholdRenderer.setDisplayChartValues(false);
+            TimeSeries timeseries = new TimeSeries("Filtered Posture");
+            dataset.addSeries(timeseries);
 
-            XYMultipleSeriesRenderer multiRenderer = new XYMultipleSeriesRenderer();
-            multiRenderer.setLabelsTextSize(val / 2);
-            multiRenderer.setAxisTitleTextSize(val);
-            multiRenderer.setYLabelsPadding(25f);
-            multiRenderer.setMargins(new int[]{0, 50, 25, 0}); //Top, Left, Bottom, Right
-            multiRenderer.setLegendTextSize(val);
-            multiRenderer.setFitLegend(true);
-            multiRenderer.setZoomEnabled(true, false);
-            multiRenderer.addSeriesRenderer(zRenderer);
-            multiRenderer.addSeriesRenderer(longtermzRenderer);
-            multiRenderer.addSeriesRenderer(fwdThresholdRenderer);
-            multiRenderer.addSeriesRenderer(bwdThresholdRenderer);
+            for (AccelData data : sensorData) {
+                timeseries.add(data.getTimestamp(), data.getLongtermZ());
+            }
+
+            renderer.setLabelsTextSize(val / 2);
+            renderer.setAxisTitleTextSize(val);
+            renderer.setYLabelsPadding(25f);
+            renderer.setMargins(new int[]{0, 50, 25, 0}); //Top, Left, Bottom, Right
+            renderer.setLegendTextSize(val);
+            renderer.setFitLegend(true);
+            renderer.setZoomEnabled(true, false);
 
             // Creating a Line Chart
-            mChart = ChartFactory.getLineChartView(getBaseContext(), dataset,
-                    multiRenderer);
+            mChart = ChartFactory.getTimeChartView(getBaseContext(), dataset,
+                    renderer, "H:mm:ss");
 
             // Adding the Line Chart to the LinearLayout
             layout.addView(mChart);
