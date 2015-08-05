@@ -28,6 +28,16 @@
             android:id="@+id/BWDeditText"
             android:title="Backward Threshold"/>
 
+        <EditTextPreference
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:key="EditTextAvgWindowSize"
+            android:ems="10"
+            android:defaultValue="5"
+            android:id="@+id/AWSeditText"
+            android:title="Average Window Size"/>
+
         <CheckBoxPreference
             android:key="checkBoxFwd"
             android:summary="On/Off"

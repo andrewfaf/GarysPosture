@@ -31,7 +31,6 @@ public class CalibrateActivity extends Activity {
         setContentView(R.layout.activity_calibrate);
 
         btnCalibrate = (Button) findViewById(R.id.calibrateButton);
-        cAccelHandler = new AccelHandler(this, 100);
         cHandler = new Handler();
         sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
@@ -41,7 +40,7 @@ public class CalibrateActivity extends Activity {
     public void doCalibrate(View v) {
         Log.d("Gary:", "Calibrate Activity doCalibrate");
         btnCalibrate.setEnabled(false);
-        cAccelHandler.startAccel();
+        cAccelHandler = AccelHandler.getInstance(this, 100);
         delayFlag = false;
         cHandler.postDelayed(crunnable, 5000);
     }
@@ -84,10 +83,10 @@ public class CalibrateActivity extends Activity {
             cAccelHandler.stopAccel();
             cHandler.removeCallbacks(crunnable);
             v.vibrate(vpattern, -1);
-            MainActivity.calibratedZ = cAccelHandler.getAverageZ();
-            Log.d("Gary:", "CalibratedZ " + MainActivity.calibratedZ);
+//            MainActivity.calibratedZ = cAccelHandler.getAverageZ();
+            Log.d("Gary:", "CalibratedZ " + cAccelHandler.getAverageZ());
 
-            sharedPrefs.edit().putFloat("CalibratedZ",(float)MainActivity.calibratedZ).apply();
+            sharedPrefs.edit().putFloat("CalibratedZ",(float)cAccelHandler.getAverageZ()).apply();
 
             finish();
         }

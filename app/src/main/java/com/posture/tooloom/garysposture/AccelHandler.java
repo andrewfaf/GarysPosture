@@ -11,39 +11,40 @@ import java.util.ArrayList;
 
 /**
  * Created by fraw on 2/07/2015.
- * Impements that accelerometer handler
+ * Implements accelerometer handler
  */
 public class AccelHandler implements SensorEventListener{
-    Context mContext;
+    private static AccelHandler singletonAccelHandler;
     private SensorManager sensorManager;
     private boolean started = false;
     private long lastSaved = System.currentTimeMillis();
-    public ArrayList<AccelData> sensorData;
+    private ArrayList<AccelData> sensorData;
     private double LongTermAverage = 0;
-    private int sampleTime = 1000;
     private Sensor accel;
     private double totalZ = 0;
     private double z = 0;
     private double zcount = 0;
+    private PrefsHandler prefsHandler;
+    private double sampleTime;
 
-    public AccelHandler(Context mContext,int sampleTime){
-        this.mContext = mContext;
-        this.sampleTime = sampleTime;
+    private AccelHandler (Context mContext,double sampleTime) {
         sensorManager = (SensorManager)mContext.getSystemService(Context.SENSOR_SERVICE);
-    }
+        prefsHandler = PrefsHandler.getInstance(mContext);
 
-
-
-    public void startAccel(){
-//        sensorData = new ArrayList<AccelData>();
-        // save prev data if available
         started = true;
+        this.sampleTime = sampleTime;
         accel = sensorManager
                 .getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         sensorManager.registerListener(this, accel,
                 SensorManager.SENSOR_DELAY_NORMAL);
 
-}
+    }
+        public static AccelHandler getInstance(Context mContext,double sampleTime){
+            if(singletonAccelHandler == null){
+                singletonAccelHandler = new AccelHandler(mContext,sampleTime);
+            }
+            return singletonAccelHandler;
+    }
 
     public void stopAccel(){
         started = false;
@@ -87,11 +88,11 @@ public class AccelHandler implements SensorEventListener{
                 z = event.values[2];
                 totalZ += z;
                 zcount += 1;
-                z -= MainActivity.calibratedZ;
+                z -= prefsHandler.getCalibratedZ();
 
                 // Moving window average
-                LongTermAverage -= LongTermAverage/3;
-                LongTermAverage += z/4;
+                LongTermAverage -= LongTermAverage/(prefsHandler.getAws()-1);
+                LongTermAverage += z/prefsHandler.getAws();
             }
         }
     }

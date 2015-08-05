@@ -1,14 +1,9 @@
 package com.posture.tooloom.garysposture;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
-import android.os.Vibrator;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -18,14 +13,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
+
 
 
 /* Done
@@ -57,21 +45,22 @@ todo    Drop Box or Google Drive the files
 public class MainActivity extends Activity implements OnClickListener {
     private Button btnStart, btnStop, btnGraph;
     private TextView txtAvg;
+
     public static boolean vibrateFwdOn = true;
     public static boolean vibrateBwdOn = true;
     public static int fwdThreshold = 5;
     public static int bwdThreshold = 5;
-    public static double calibratedZ = 0;
-    private SharedPreferences sharedPrefs;
+    public static double aws;
+
     private static float brightness = 0.1f;
-    private AccelHandler lAccelHandler;
-    Handler mHandler, vibHandler;
-    public ArrayList<AccelData> sensorData;
     private boolean started = false;
 
-    FileOutputStream fos;
+    AlertMonitor alertMonitor;
+    PrefsHandler prefsHandler;
+    FileHandler fileHandler;
+    AccelHandler laccelHandler;
 
-    private static final String FILENAME = "GarysPostureData";
+    private static Handler mHandler;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -92,35 +81,13 @@ public class MainActivity extends Activity implements OnClickListener {
 
         txtAvg = (TextView) findViewById(R.id.textView);
 
+        alertMonitor = new AlertMonitor(this);
+        prefsHandler = PrefsHandler.getInstance(this);
+
         mHandler = new Handler();
-        vibHandler = new Handler();
+        aws = prefsHandler.getAws();
 
-        sensorData = new ArrayList<AccelData>();
-        lAccelHandler = new AccelHandler(this,500);
-
-        sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-        calibratedZ = (double)sharedPrefs.getFloat("CalibratedZ",0.0f);
-
-        SharedPreferences.OnSharedPreferenceChangeListener preflistener =
-                new SharedPreferences.OnSharedPreferenceChangeListener() {
-
-                    @Override
-            public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-                vibrateFwdOn = sharedPrefs.getBoolean("checkBoxFwd", true);
-                vibrateBwdOn = sharedPrefs.getBoolean("checkBoxBwd", true);
-
-                Log.d("Gary:", "EditTextFwdThresh = " +
-                        Integer.parseInt(sharedPrefs.getString("EditTextFwdThresh", "5")));
-
-                Log.d("Gary:", "EditTextBwdThresh = " +
-                        Integer.parseInt(sharedPrefs.getString("EditTextBwdThresh", "5")));
-
-                fwdThreshold = Integer.parseInt(sharedPrefs.getString("EditTextFwdThresh", "5"));
-                bwdThreshold = Integer.parseInt(sharedPrefs.getString("EditTextBwdThresh", "5"));
-            }
-        };
-        sharedPrefs.registerOnSharedPreferenceChangeListener(preflistener);
-        Toast.makeText(this, "Calibrated Value is " + calibratedZ, Toast.LENGTH_LONG).show();
+//        Toast.makeText(this, "Calibrated Value is " + calibratedZ, Toast.LENGTH_LONG).show();
 
     }
 
@@ -154,78 +121,34 @@ public class MainActivity extends Activity implements OnClickListener {
         super.onResume();
 
     }
+    private Runnable mrunnable = new Runnable() {
+        @Override
+        public void run() {
+
+//            txtAvg.setText(String.format("%.2f",laccelHandler.getLongTermAverage()));
+            mHandler.postDelayed(this,500);
+        }
+    };
+
 
     @Override
     protected void onPause() {
         super.onPause();
         Log.d("Gary:", "MainActivity onPause");
         if (started) {
-            try {
-                // todo When this gets turned into a service this may be a problem
-                fos.close();
-            } catch (IOException e) {
-                e.printStackTrace();
+                fileHandler.closeFile();
             }
-        }
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        lAccelHandler.stopAccel();
-        mHandler.removeCallbacks(mrunnable);
-        mHandler.removeCallbacks(vibrunnable);
-        if(started){
-            try {
-                fos.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        alertMonitor.killHandlers();
+        if (started) {
+            fileHandler.closeFile();
         }
    }
 
-    private Runnable mrunnable = new Runnable() {
-        @Override
-        public void run() {
-
-            txtAvg.setText(String.format("%.2f", lAccelHandler.getLongTermAverage()));
-            mHandler.postDelayed(this,500);
-        }
-    };
-
-
-    private Runnable vibrunnable = new Runnable() {
-        @Override
-
-        public void run() {
-            long[] vpatternf = {0, 200, 200, 200, 200, 200, 0};
-            long[] vpatternb = {0, 400, 200, 400, 0};
-
-            long currentTime = System.currentTimeMillis();
-            Date resultDate = new Date(currentTime);
-
-            AccelData data = new AccelData(resultDate, lAccelHandler.getZ(),
-                    lAccelHandler.getLongTermAverage());
-
-                sensorData.add(data);
-
-            String text = data.toCsv();
-            try {
-                fos.write(text.getBytes());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-            if ((lAccelHandler.getLongTermAverage() > fwdThreshold/2) && vibrateFwdOn) {
-                v.vibrate(vpatternf, -1);
-            } else if ((lAccelHandler.getLongTermAverage() < -bwdThreshold/2) && vibrateBwdOn) {
-                v.vibrate(vpatternb, -1);
-            }
-            long vbn = Long.parseLong(sharedPrefs.getString("updates_interval", "5000"));
-            mHandler.postDelayed(this,vbn);
-        }
-    };
 
     @Override
     public void onClick(View v) {
@@ -236,18 +159,13 @@ public class MainActivity extends Activity implements OnClickListener {
                 btnStart.setEnabled(false);
                 btnStop.setEnabled(true);
                 btnGraph.setEnabled(false);
-                try {
-                    createFile();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                lAccelHandler.startAccel();
+                fileHandler = FileHandler.getInstance(this);
                 started = true;
                 // Wait 5 seconds before starting.
-                mHandler.postDelayed(mrunnable,100);
-                vibHandler.postDelayed(vibrunnable, 5000);
-
-                if (sharedPrefs.getBoolean("checkBoxScreen", true)){
+                alertMonitor.startHandlers();
+                laccelHandler = AccelHandler.getInstance(this,prefsHandler.getUpdatesInterval());
+                mHandler.post(mrunnable);
+                if (prefsHandler.getKeepScreenOn()){
                     w.addFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
                     lp = w.getAttributes();
                     brightness = lp.screenBrightness;
@@ -262,11 +180,10 @@ public class MainActivity extends Activity implements OnClickListener {
                 btnStart.setEnabled(true);
                 btnStop.setEnabled(false);
                 btnGraph.setEnabled(true);
-                lAccelHandler.stopAccel();
                 started = false;
+                alertMonitor.killHandlers();
                 mHandler.removeCallbacks(mrunnable);
-                mHandler.removeCallbacks(vibrunnable);
-                if (sharedPrefs.getBoolean("checkBoxScreen", true)) {
+                if (prefsHandler.getKeepScreenOn()) {
                     w.clearFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
                     w = getWindow();
                     lp = w.getAttributes();
@@ -275,15 +192,11 @@ public class MainActivity extends Activity implements OnClickListener {
                     w.setAttributes(lp);
                 }
 
-                try {
-                    fos.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                    fileHandler.closeFile();
                 break;
             case R.id.btnGraph:
                 Intent i = new Intent(this, GraphActivity.class);
-                i.putExtra("data", sensorData);
+                i.putExtra("data", alertMonitor.sensorData);
                 startActivity(i);
                 break;
             default:
@@ -291,47 +204,5 @@ public class MainActivity extends Activity implements OnClickListener {
         }
 
     }
-    public boolean checkExternalStorage(){
-        String state = Environment.getExternalStorageState();
-        switch (state) {
-            case Environment.MEDIA_MOUNTED:
-                return true;
-            case Environment.MEDIA_MOUNTED_READ_ONLY:
-                Toast.makeText(this, "External Storage is read-only", Toast.LENGTH_LONG).show();
-                break;
-            default:
-                Toast.makeText(this, "External Storage is unavailable", Toast.LENGTH_LONG).show();
-                break;
-        }
-        return false;
-    }
 
-    public void createFile() throws IOException {
-        Calendar calendar = Calendar.getInstance();
-        SimpleDateFormat fnametime = new SimpleDateFormat("yyyyMMdd-kkmm");
-        String dateString = fnametime.format(calendar.getTime());
-
-        File extDir;
-
-        if (checkExternalStorage()) {
-            extDir = new File(Environment.getExternalStoragePublicDirectory(
-                    Environment.DIRECTORY_DOWNLOADS),"Gary");
-
-            if(!extDir.exists()){
-                extDir.mkdir();
-            }
-
-            fos = new FileOutputStream(extDir + "/" + FILENAME + dateString + ".csv",true);
-        } else{
-            extDir = new File(getFilesDir(),FILENAME + dateString + ".csv");
-            fos = new FileOutputStream(extDir);
-        }
-
-
-        // Write Header
-        String csvText = "Timestamp,Z,AvgZ\n";
-        fos.write(csvText.getBytes());
-        Toast.makeText(this, "File created : " + extDir, Toast.LENGTH_LONG).show();
-
-    }
 }
