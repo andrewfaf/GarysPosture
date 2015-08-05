@@ -39,7 +39,7 @@ public class PrefsHandler {
 
                     @Override
                     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-                        aws = (sharedPrefs.getFloat("EditTextAvgWindowSize", 4.0f));
+                        aws = Integer.parseInt(sharedPrefs.getString("EditTextAvgWindowSize", "4"));
                         Log.d("Gary:", "EditTextAvgWindowSize = " +
                                 (sharedPrefs.getString("EditTextAvgWindowSize", "999")));
                         if (aws < 2) {
@@ -54,53 +54,64 @@ public class PrefsHandler {
                         Log.d("Gary:", "EditTextBwdThresh = " +
                                 sharedPrefs.getString("EditTextBwdThresh", "5"));
 
-                        fwdThreshold = Integer.parseInt(sharedPrefs.getString("EditTextFwdThresh", "5"));
-                        bwdThreshold = Integer.parseInt(sharedPrefs.getString("EditTextBwdThresh", "5"));
+                        fwdThreshold = Integer.parseInt(sharedPrefs.getString(
+                                "EditTextFwdThresh", "5"));
+                        bwdThreshold = Integer.parseInt(sharedPrefs.getString(
+                                "EditTextBwdThresh", "5"));
 
                         keepScreenOn = sharedPrefs.getBoolean("checkBoxScreen", true);
-                        updatesInterval = sharedPrefs.getFloat("updates_interval", 5000.0f);
+                        updatesInterval = Integer.parseInt(sharedPrefs.getString(
+                                "updates_interval", "5000"));
 
                     }
                 };
         sharedPrefs.registerOnSharedPreferenceChangeListener(preflistener);
 
         calibratedZ = (double) sharedPrefs.getFloat("CalibratedZ", 0.0f);
-        aws = (double) sharedPrefs.getFloat("EditTextAvgWindowSize", 4.0f);
+        aws = (double) Integer.parseInt(sharedPrefs.getString("EditTextAvgWindowSize", "4"));
         vibrateFwdOn = sharedPrefs.getBoolean("checkBoxFwd", true);
         vibrateBwdOn = sharedPrefs.getBoolean("checkBoxBwd", true);
         fwdThreshold = Integer.parseInt(sharedPrefs.getString("EditTextFwdThresh", "5"));
         bwdThreshold = Integer.parseInt(sharedPrefs.getString("EditTextBwdThresh", "5"));
-        updatesInterval = sharedPrefs.getFloat("updates_interval", 5000.0f);
+        updatesInterval = Integer.parseInt(sharedPrefs.getString("updates_interval", "5000"));
     }
 
     public double getCalibratedZ() {
+        calibratedZ = (double) sharedPrefs.getFloat("CalibratedZ", 0.0f);
         return calibratedZ;
     }
 
     public double getAws() {
+        aws = (double) Integer.parseInt(sharedPrefs.getString("EditTextAvgWindowSize", "4"));
         return aws;
     }
 
     public boolean getvibrateFwdOn() {
+        vibrateFwdOn = sharedPrefs.getBoolean("checkBoxFwd", true);
         return vibrateFwdOn;
     }
 
     public boolean getvibrateBwdOn() {
+        vibrateBwdOn = sharedPrefs.getBoolean("checkBoxBwd", true);
         return vibrateBwdOn;
     }
 
     public double getfwdThreshold() {
+        fwdThreshold = Integer.parseInt(sharedPrefs.getString("EditTextFwdThresh", "5"));
         return fwdThreshold;
     }
 
     public double getbwdThreshold() {
+        bwdThreshold = Integer.parseInt(sharedPrefs.getString("EditTextBwdThresh", "5"));
         return bwdThreshold;
     }
 
     public boolean getKeepScreenOn() {
+        keepScreenOn = sharedPrefs.getBoolean("checkBoxScreen", true);
         return keepScreenOn;
     }
     public double getUpdatesInterval(){
+        updatesInterval = Integer.parseInt(sharedPrefs.getString("updates_interval", "5000"));
         return updatesInterval;
     }
 }

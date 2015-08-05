@@ -49,7 +49,7 @@ public class CalibrateActivity extends Activity {
     protected void onResume() {
         super.onResume();
         Log.d("Gary:", "Calibrate Activity onResume");
-        cAccelHandler.restartAccel();
+//        cAccelHandler.restartAccel();
     }
 
     @Override

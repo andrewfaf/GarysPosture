@@ -50,7 +50,7 @@ public class MainActivity extends Activity implements OnClickListener {
     public static boolean vibrateBwdOn = true;
     public static int fwdThreshold = 5;
     public static int bwdThreshold = 5;
-    public static double aws;
+//    public static double aws;
 
     private static float brightness = 0.1f;
     private boolean started = false;
@@ -81,11 +81,6 @@ public class MainActivity extends Activity implements OnClickListener {
 
         txtAvg = (TextView) findViewById(R.id.textView);
 
-        alertMonitor = new AlertMonitor(this);
-        prefsHandler = PrefsHandler.getInstance(this);
-
-        mHandler = new Handler();
-        aws = prefsHandler.getAws();
 
 //        Toast.makeText(this, "Calibrated Value is " + calibratedZ, Toast.LENGTH_LONG).show();
 
@@ -125,7 +120,7 @@ public class MainActivity extends Activity implements OnClickListener {
         @Override
         public void run() {
 
-//            txtAvg.setText(String.format("%.2f",laccelHandler.getLongTermAverage()));
+            txtAvg.setText(String.format("%.2f",laccelHandler.getLongTermAverage()));
             mHandler.postDelayed(this,500);
         }
     };
@@ -160,10 +155,15 @@ public class MainActivity extends Activity implements OnClickListener {
                 btnStop.setEnabled(true);
                 btnGraph.setEnabled(false);
                 fileHandler = FileHandler.getInstance(this);
+                alertMonitor = new AlertMonitor(this);
+                prefsHandler = PrefsHandler.getInstance(this);
+                mHandler = new Handler();
+//                aws = prefsHandler.getAws();
                 started = true;
                 // Wait 5 seconds before starting.
                 alertMonitor.startHandlers();
                 laccelHandler = AccelHandler.getInstance(this,prefsHandler.getUpdatesInterval());
+                laccelHandler.startAccel();
                 mHandler.post(mrunnable);
                 if (prefsHandler.getKeepScreenOn()){
                     w.addFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);

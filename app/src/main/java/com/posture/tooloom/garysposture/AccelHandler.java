@@ -31,15 +31,24 @@ public class AccelHandler implements SensorEventListener{
         sensorManager = (SensorManager)mContext.getSystemService(Context.SENSOR_SERVICE);
         prefsHandler = PrefsHandler.getInstance(mContext);
 
-        started = true;
         this.sampleTime = sampleTime;
         accel = sensorManager
                 .getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        sensorManager.registerListener(this, accel,
-                SensorManager.SENSOR_DELAY_NORMAL);
+        startAccel();
 
     }
-        public static AccelHandler getInstance(Context mContext,double sampleTime){
+
+    public void startAccel() {
+        started = true;
+        double totalZ = 0;
+        double z = 0;
+        double zcount = 0;
+
+        sensorManager.registerListener(this, accel,
+                SensorManager.SENSOR_DELAY_NORMAL);
+    }
+
+    public static AccelHandler getInstance(Context mContext,double sampleTime){
             if(singletonAccelHandler == null){
                 singletonAccelHandler = new AccelHandler(mContext,sampleTime);
             }
