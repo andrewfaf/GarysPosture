@@ -6,12 +6,15 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 /**
- * Created by fraw on 5/08/2015.
+ * Encapsulates the Persistent Configuration Data for the Application.
+ * It is implemented as a Singelton Class so that all other Classes and Activities
+ * access the same information and so that multiple unnecessary objects don't get created
+ * When the Preferences are updated the local variables are updated also.
+ * Getter methods allow the Applications other Activities and Classes to access these values
  */
 public class PrefsHandler {
     private static PrefsHandler singletonPrefsHandler;
     private static SharedPreferences sharedPrefs;
-    private Context mcontext;
     private static boolean vibrateFwdOn = true;
     private static boolean vibrateBwdOn = true;
     private static boolean keepScreenOn = true;
@@ -32,28 +35,42 @@ public class PrefsHandler {
 
 
     public PrefsHandler(Context mcontext) {
-        this.mcontext = mcontext;
-        sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this.mcontext);
+
+        sharedPrefs = PreferenceManager.getDefaultSharedPreferences(mcontext);
+
+        calibratedZ = (double) sharedPrefs.getFloat("CalibratedZ", 0.0f);
+        aws = (double) Integer.parseInt(sharedPrefs.getString("EditTextAvgWindowSize", "4"));
+        vibrateFwdOn = sharedPrefs.getBoolean("checkBoxFwd", true);
+        vibrateBwdOn = sharedPrefs.getBoolean("checkBoxBwd", true);
+        fwdThreshold = Integer.parseInt(sharedPrefs.getString("EditTextFwdThresh", "5"));
+        bwdThreshold = Integer.parseInt(sharedPrefs.getString("EditTextBwdThresh", "5"));
+        updatesInterval = Integer.parseInt(sharedPrefs.getString("updates_interval", "5000"));
+        keepScreenOn = sharedPrefs.getBoolean("checkBoxScreen", true);
+        Log.d("Gary:", "CalibratedZ = " + calibratedZ);
+        Log.d("Gary:", "Average Window Size = " + aws);
+        Log.d("Gary:", "Vibrate Forward On = " + vibrateFwdOn);
+        Log.d("Gary:", "Vibrate Backward On = " + vibrateBwdOn);
+        Log.d("Gary:", "EditTextFwdThresh = " + fwdThreshold);
+        Log.d("Gary:", "EditTextBwdThresh = " + bwdThreshold);
+        Log.d("Gary:", "Keep Screen On = " + keepScreenOn);
+        Log.d("Gary:", "Updates Interval = " + updatesInterval);
+
         SharedPreferences.OnSharedPreferenceChangeListener preflistener =
                 new SharedPreferences.OnSharedPreferenceChangeListener() {
 
                     @Override
-                    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+                    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
+                                                          String key) {
+
+                        calibratedZ = (double) sharedPrefs.getFloat("CalibratedZ", 0.0f);
                         aws = Integer.parseInt(sharedPrefs.getString("EditTextAvgWindowSize", "4"));
                         Log.d("Gary:", "EditTextAvgWindowSize = " +
-                                (sharedPrefs.getString("EditTextAvgWindowSize", "999")));
+                                (sharedPrefs.getString("EditTextAvgWindowSize", "4")));
                         if (aws < 2) {
                             aws = 2;
                         }
                         vibrateFwdOn = sharedPrefs.getBoolean("checkBoxFwd", true);
                         vibrateBwdOn = sharedPrefs.getBoolean("checkBoxBwd", true);
-
-                        Log.d("Gary:", "EditTextFwdThresh = " +
-                                sharedPrefs.getString("EditTextFwdThresh", "5"));
-
-                        Log.d("Gary:", "EditTextBwdThresh = " +
-                                sharedPrefs.getString("EditTextBwdThresh", "5"));
-
                         fwdThreshold = Integer.parseInt(sharedPrefs.getString(
                                 "EditTextFwdThresh", "5"));
                         bwdThreshold = Integer.parseInt(sharedPrefs.getString(
@@ -63,17 +80,18 @@ public class PrefsHandler {
                         updatesInterval = Integer.parseInt(sharedPrefs.getString(
                                 "updates_interval", "5000"));
 
+                        Log.d("Gary:", "Changed CalibratedZ = " + calibratedZ);
+                        Log.d("Gary:", "Changed Average Window Size = " + aws);
+                        Log.d("Gary:", "Changed Vibrate Forward On = " + vibrateFwdOn);
+                        Log.d("Gary:", "Changed Vibrate Backward On = " + vibrateBwdOn);
+                        Log.d("Gary:", "Changed EditTextFwdThresh = " + fwdThreshold);
+                        Log.d("Gary:", "Changed EditTextBwdThresh = " + bwdThreshold);
+                        Log.d("Gary:", "Changed Keep Screen On = " + keepScreenOn);
+                        Log.d("Gary:", "Changed Updates Interval = " + updatesInterval);
+
                     }
                 };
         sharedPrefs.registerOnSharedPreferenceChangeListener(preflistener);
-
-        calibratedZ = (double) sharedPrefs.getFloat("CalibratedZ", 0.0f);
-        aws = (double) Integer.parseInt(sharedPrefs.getString("EditTextAvgWindowSize", "4"));
-        vibrateFwdOn = sharedPrefs.getBoolean("checkBoxFwd", true);
-        vibrateBwdOn = sharedPrefs.getBoolean("checkBoxBwd", true);
-        fwdThreshold = Integer.parseInt(sharedPrefs.getString("EditTextFwdThresh", "5"));
-        bwdThreshold = Integer.parseInt(sharedPrefs.getString("EditTextBwdThresh", "5"));
-        updatesInterval = Integer.parseInt(sharedPrefs.getString("updates_interval", "5000"));
     }
 
     public double getCalibratedZ() {

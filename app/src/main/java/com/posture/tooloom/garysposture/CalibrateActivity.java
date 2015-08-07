@@ -56,14 +56,14 @@ public class CalibrateActivity extends Activity {
     protected void onPause() {
         super.onPause();
         Log.d("Gary:", "Calibrate Activity onPause");
-		cAccelHandler.pauseAccel();
+//		cAccelHandler.pauseAccel();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         Log.d("Gary:", "Calibrate Activity onDestroy");
-        cAccelHandler.stopAccel();
+//        cAccelHandler.stopAccel();
     }
 
 

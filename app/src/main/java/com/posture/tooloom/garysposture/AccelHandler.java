@@ -26,12 +26,17 @@ public class AccelHandler implements SensorEventListener{
     private double zcount = 0;
     private PrefsHandler prefsHandler;
     private double sampleTime;
+    private double aws;
+    private double calibratedZ;
 
     private AccelHandler (Context mContext,double sampleTime) {
         sensorManager = (SensorManager)mContext.getSystemService(Context.SENSOR_SERVICE);
         prefsHandler = PrefsHandler.getInstance(mContext);
 
         this.sampleTime = sampleTime;
+        aws =prefsHandler.getAws();
+        calibratedZ =prefsHandler.getCalibratedZ();
+
         accel = sensorManager
                 .getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         startAccel();
@@ -40,9 +45,9 @@ public class AccelHandler implements SensorEventListener{
 
     public void startAccel() {
         started = true;
-        double totalZ = 0;
-        double z = 0;
-        double zcount = 0;
+        totalZ = 0;
+        z = 0;
+        zcount = 0;
 
         sensorManager.registerListener(this, accel,
                 SensorManager.SENSOR_DELAY_NORMAL);
@@ -85,6 +90,7 @@ public class AccelHandler implements SensorEventListener{
         double avgZ;
         avgZ = totalZ;
         avgZ /= zcount;
+        Log.d("Gary:" , "totalZ " + totalZ);
         Log.d("Gary:", "avgZ " + avgZ);
         return avgZ;
         }
@@ -97,11 +103,11 @@ public class AccelHandler implements SensorEventListener{
                 z = event.values[2];
                 totalZ += z;
                 zcount += 1;
-                z -= prefsHandler.getCalibratedZ();
+                z -= calibratedZ;
 
                 // Moving window average
-                LongTermAverage -= LongTermAverage/(prefsHandler.getAws()-1);
-                LongTermAverage += z/prefsHandler.getAws();
+                LongTermAverage -= LongTermAverage/(aws-1);
+                LongTermAverage += z/aws;
             }
         }
     }

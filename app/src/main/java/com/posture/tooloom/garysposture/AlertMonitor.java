@@ -36,10 +36,13 @@ public class AlertMonitor {
             long[] vpatternb = {0, 400, 200, 400, 0};
 
             long currentTime = System.currentTimeMillis();
+            double upper = prefsHandler.getfwdThreshold()/2;
+            double lower = -prefsHandler.getbwdThreshold()/2;
+            double vbn = prefsHandler.getUpdatesInterval();
             Date resultDate = new Date(currentTime);
 
             AccelData data = new AccelData(resultDate, lAccelHandler.getZ(),
-                    lAccelHandler.getLongTermAverage());
+                    lAccelHandler.getLongTermAverage(), upper,lower);
 
             sensorData.add(data);
 
@@ -52,14 +55,12 @@ public class AlertMonitor {
             }
 
             Vibrator v = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
-            if ((lAccelHandler.getLongTermAverage() > prefsHandler.getfwdThreshold()/2) &&
-                    prefsHandler.getvibrateFwdOn()) {
+            if ((lAccelHandler.getLongTermAverage() > upper) && prefsHandler.getvibrateFwdOn()) {
                 v.vibrate(vpatternf, -1);
-            } else if ((lAccelHandler.getLongTermAverage() < -prefsHandler.getbwdThreshold()/2) &&
+            } else if ((lAccelHandler.getLongTermAverage() < lower) &&
                     prefsHandler.getvibrateBwdOn()) {
                 v.vibrate(vpatternb, -1);
             }
-            double vbn = prefsHandler.getUpdatesInterval();
             vibHandler.postDelayed(this, (long) vbn);
         }
     };

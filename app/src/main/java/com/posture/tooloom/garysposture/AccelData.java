@@ -6,17 +6,18 @@ import java.util.Date;
 
 public class AccelData implements Serializable {
 	private Date timestamp;
-	private double x;
-	private double y;
 	private double z;
 	private double longtermz;
+	private double upper, lower;
 	
 	
 	
-	public AccelData(Date timestamp, double z, double longtermz) {
+	public AccelData(Date timestamp, double z, double longtermz, double upper, double lower) {
 		this.timestamp = timestamp;
 		this.z = z;
 		this.longtermz = longtermz;
+		this.upper = upper;
+		this.lower = lower;
 	}
 	public Date getTimestamp() {
 		return timestamp;
@@ -26,6 +27,12 @@ public class AccelData implements Serializable {
 	}
 	public double getLongtermZ() {
 		return longtermz;
+	}
+	public double getUpper() {
+		return upper;
+	}
+	public double getLower() {
+		return lower;
 	}
 
 	public String toString()

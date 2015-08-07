@@ -46,38 +46,75 @@ public class GraphActivity extends Activity {
 
         if (sensorData != null || sensorData.size() > 0) {
             XYMultipleSeriesDataset dataset = new XYMultipleSeriesDataset();
-            XYMultipleSeriesRenderer renderer = new XYMultipleSeriesRenderer();
-
-            XYSeriesRenderer longtermzRenderer = new XYSeriesRenderer();
-            longtermzRenderer.setColor(Color.GREEN);
-            longtermzRenderer.setPointStyle(PointStyle.DIAMOND);
-            longtermzRenderer.setFillPoints(true);
-            longtermzRenderer.setLineWidth(5);
-            longtermzRenderer.setDisplayChartValues(false);
-
-            renderer.addSeriesRenderer(longtermzRenderer);
-            renderer.setClickEnabled(true);
-            renderer.setSelectableBuffer(20);
-            renderer.setPanEnabled(true);
-
-            TimeSeries timeseries = new TimeSeries("Filtered Posture");
-            dataset.addSeries(timeseries);
+            TimeSeries longtermZtimeseries = new TimeSeries("Filtered Posture");
+            TimeSeries rawZtimeseries = new TimeSeries("Raw Posture");
+            TimeSeries upperSeries = new TimeSeries("");
+            TimeSeries lowerSeries = new TimeSeries("");
 
             for (AccelData data : sensorData) {
-                timeseries.add(data.getTimestamp(), data.getLongtermZ());
+                rawZtimeseries.add(data.getTimestamp(), data.getZ());
+                longtermZtimeseries.add(data.getTimestamp(), data.getLongtermZ());
+                upperSeries.add(data.getTimestamp(), data.getUpper());
+                lowerSeries.add(data.getTimestamp(), data.getLower());
             }
 
-            renderer.setLabelsTextSize(val / 2);
-            renderer.setAxisTitleTextSize(val);
-            renderer.setYLabelsPadding(25f);
-            renderer.setMargins(new int[]{0, 50, 25, 0}); //Top, Left, Bottom, Right
-            renderer.setLegendTextSize(val);
-            renderer.setFitLegend(true);
-            renderer.setZoomEnabled(true, false);
+            dataset.addSeries(rawZtimeseries);
+            dataset.addSeries(longtermZtimeseries);
+            dataset.addSeries(upperSeries);
+            dataset.addSeries(lowerSeries);
+
+            XYSeriesRenderer longTermZRenderer = new XYSeriesRenderer();
+            longTermZRenderer.setColor(Color.GREEN);
+            longTermZRenderer.setPointStyle(PointStyle.DIAMOND);
+            longTermZRenderer.setFillPoints(true);
+            longTermZRenderer.setLineWidth(5);
+            longTermZRenderer.setDisplayChartValues(false);
+
+            XYSeriesRenderer rawZRenderer = new XYSeriesRenderer();
+            rawZRenderer.setColor(Color.CYAN);
+            rawZRenderer.setPointStyle(PointStyle.CIRCLE);
+            rawZRenderer.setFillPoints(true);
+            rawZRenderer.setLineWidth(5);
+            rawZRenderer.setDisplayChartValues(false);
+
+            XYSeriesRenderer upperRenderer = new XYSeriesRenderer();
+            upperRenderer.setColor(Color.RED);
+            upperRenderer.setPointStyle(PointStyle.TRIANGLE);
+            upperRenderer.setFillPoints(true);
+            upperRenderer.setLineWidth(2);
+            upperRenderer.setDisplayChartValues(false);
+            upperRenderer.setShowLegendItem(false);
+
+            XYSeriesRenderer lowerRenderer = new XYSeriesRenderer();
+            lowerRenderer.setColor(Color.RED);
+            lowerRenderer.setPointStyle(PointStyle.TRIANGLE);
+            lowerRenderer.setFillPoints(true);
+            lowerRenderer.setLineWidth(2);
+            lowerRenderer.setDisplayChartValues(false);
+            lowerRenderer.setShowLegendItem(false);
+
+            XYMultipleSeriesRenderer multiRenderer = new XYMultipleSeriesRenderer();
+
+            multiRenderer.addSeriesRenderer(longTermZRenderer);
+            multiRenderer.addSeriesRenderer(rawZRenderer);
+            multiRenderer.addSeriesRenderer(upperRenderer);
+            multiRenderer.addSeriesRenderer(lowerRenderer);
+
+ //           multiRenderer.setClickEnabled(true);
+ //           multiRenderer.setSelectableBuffer(20);
+ //           multiRenderer.setPanEnabled(true);
+
+            multiRenderer.setLabelsTextSize(val / 2);
+            multiRenderer.setAxisTitleTextSize(val);
+            multiRenderer.setYLabelsPadding(25f);
+            multiRenderer.setMargins(new int[]{0, 50, 25, 0}); //Top, Left, Bottom, Right
+            multiRenderer.setLegendTextSize(val);
+            multiRenderer.setFitLegend(true);
+            multiRenderer.setZoomEnabled(true, true);
 
             // Creating a Line Chart
             mChart = ChartFactory.getTimeChartView(getBaseContext(), dataset,
-                    renderer, "H:mm:ss");
+                    multiRenderer, "H:mm:ss");
 
             // Adding the Line Chart to the LinearLayout
             layout.addView(mChart);
