@@ -35,8 +35,6 @@ public class AccelHandler implements SensorEventListener{
         prefsHandler = PrefsHandler.getInstance(mContext);
 
         this.sampleTime = sampleTime;
-        aws =prefsHandler.getAws();
-        calibratedZ =prefsHandler.getCalibratedZ();
 
         accel = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         startAccel();
@@ -45,6 +43,8 @@ public class AccelHandler implements SensorEventListener{
 
     public void startAccel() {
         started = true;
+        calibratedZ =prefsHandler.getCalibratedZ();
+        aws =prefsHandler.getAws();
         totalZ = 0;
         z = 0;
         zcount = 0;

@@ -31,12 +31,12 @@ import android.view.MenuItem;
     Make sure file gets closed on exit. - Done
     Set timestamp to be actual time instead of system tic count - Done
     Graph shows time on X axis - Done
+    Reset accel values when startAccel() is called so that the instantaneous and filtered
+        values are not influenced by the previous session in the case
+        where you stop and then start a new session. - Done
 */
 
 /* To Do
-todo    Reset accel values when startAccel() is called so that the instantaneous and filtered
-        values are not influenced by the previous session in the case
-        where you stop and then start a new session.
 todo    Change to a service for phones that don't need the screen on.
 todo    Need to be able to select a saved data set and graph it
 todo    Need to be able to select a group of data sets (or one) and email csv formatted versions
@@ -129,9 +129,11 @@ public class MainActivity extends Activity implements OnClickListener {
     protected void onPause() {
         super.onPause();
         Log.d("Gary:", "MainActivity onPause");
+/*
         if (started) {
                 fileHandler.closeFile();
             }
+*/
     }
 
     @Override
@@ -148,6 +150,7 @@ public class MainActivity extends Activity implements OnClickListener {
     @Override
     public void onClick(View v) {
         Window w = getWindow();
+        w.clearFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         WindowManager.LayoutParams lp;
         switch (v.getId()) {
             case R.id.btnStart:

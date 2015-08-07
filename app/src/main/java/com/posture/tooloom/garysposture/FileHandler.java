@@ -2,6 +2,7 @@ package com.posture.tooloom.garysposture;
 
 import android.content.Context;
 import android.os.Environment;
+import android.util.Log;
 import android.widget.Toast;
 
 import java.io.File;
@@ -78,6 +79,7 @@ public static FileHandler getInstance(Context mcontext){
     }
 
     public void closeFile(){
+        Log.d("Gary:", "FileHandler closeFile");
         try {
             fos.close();
         } catch (IOException e) {
