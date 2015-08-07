@@ -1,5 +1,6 @@
 package com.posture.tooloom.garysposture;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -37,8 +38,7 @@ public class AccelHandler implements SensorEventListener{
         aws =prefsHandler.getAws();
         calibratedZ =prefsHandler.getCalibratedZ();
 
-        accel = sensorManager
-                .getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        accel = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         startAccel();
 
     }

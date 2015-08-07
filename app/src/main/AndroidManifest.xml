@@ -34,6 +34,12 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.posture.tooloom.garysposture.MainActivity"/>
         </activity>
+        <receiver android:name=".screenOffReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.SCREEN_OFF">
+                </action>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

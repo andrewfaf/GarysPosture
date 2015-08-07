@@ -41,6 +41,7 @@ public class CalibrateActivity extends Activity {
         Log.d("Gary:", "Calibrate Activity doCalibrate");
         btnCalibrate.setEnabled(false);
         cAccelHandler = AccelHandler.getInstance(this, 100);
+        cAccelHandler.startAccel();
         delayFlag = false;
         cHandler.postDelayed(crunnable, 5000);
     }

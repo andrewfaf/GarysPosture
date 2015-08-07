@@ -2,6 +2,7 @@ package com.posture.tooloom.garysposture;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -46,12 +47,6 @@ public class MainActivity extends Activity implements OnClickListener {
     private Button btnStart, btnStop, btnGraph;
     private TextView txtAvg;
 
-    public static boolean vibrateFwdOn = true;
-    public static boolean vibrateBwdOn = true;
-    public static int fwdThreshold = 5;
-    public static int bwdThreshold = 5;
-//    public static double aws;
-
     private static float brightness = 0.1f;
     private boolean started = false;
 
@@ -59,7 +54,7 @@ public class MainActivity extends Activity implements OnClickListener {
     PrefsHandler prefsHandler;
     FileHandler fileHandler;
     AccelHandler laccelHandler;
-
+    screenOffReceiver mScreenOffReceiver;
     private static Handler mHandler;
 
     @Override
@@ -81,6 +76,10 @@ public class MainActivity extends Activity implements OnClickListener {
 
         txtAvg = (TextView) findViewById(R.id.textView);
 
+        mScreenOffReceiver = new screenOffReceiver();
+        IntentFilter screenStateFilter = new IntentFilter();
+        screenStateFilter.addAction(Intent.ACTION_SCREEN_OFF);
+        registerReceiver(mScreenOffReceiver, screenStateFilter);
 
 //        Toast.makeText(this, "Calibrated Value is " + calibratedZ, Toast.LENGTH_LONG).show();
 
@@ -142,6 +141,7 @@ public class MainActivity extends Activity implements OnClickListener {
         if (started) {
             fileHandler.closeFile();
         }
+        unregisterReceiver(mScreenOffReceiver);
    }
 
 
@@ -158,13 +158,13 @@ public class MainActivity extends Activity implements OnClickListener {
                 alertMonitor = new AlertMonitor(this);
                 prefsHandler = PrefsHandler.getInstance(this);
                 mHandler = new Handler();
-//                aws = prefsHandler.getAws();
                 started = true;
                 // Wait 5 seconds before starting.
                 alertMonitor.startHandlers();
                 laccelHandler = AccelHandler.getInstance(this,prefsHandler.getUpdatesInterval());
                 laccelHandler.startAccel();
                 mHandler.post(mrunnable);
+/*
                 if (prefsHandler.getKeepScreenOn()){
                     w.addFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
                     lp = w.getAttributes();
@@ -174,6 +174,7 @@ public class MainActivity extends Activity implements OnClickListener {
 // and you can't easily turn it back on
                     w.setAttributes(lp);
                 }
+*/
 
                 break;
             case R.id.btnStop:
@@ -183,15 +184,16 @@ public class MainActivity extends Activity implements OnClickListener {
                 started = false;
                 alertMonitor.killHandlers();
                 mHandler.removeCallbacks(mrunnable);
+/*
                 if (prefsHandler.getKeepScreenOn()) {
                     w.clearFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
                     w = getWindow();
                     lp = w.getAttributes();
                 lp.screenBrightness = brightness;
-//                    lp.screenBrightness = WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_FULL;
                     w.setAttributes(lp);
                 }
 
+*/
                     fileHandler.closeFile();
                 break;
             case R.id.btnGraph:
