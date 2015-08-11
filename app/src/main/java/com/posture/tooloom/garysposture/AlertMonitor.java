@@ -3,6 +3,7 @@ package com.posture.tooloom.garysposture;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Vibrator;
+import android.util.Log;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -41,8 +42,9 @@ public class AlertMonitor {
             double vbn = prefsHandler.getUpdatesInterval();
             Date resultDate = new Date(currentTime);
 
+            Log.d("Gary:", "AlertMonitor Triggered");
             AccelData data = new AccelData(resultDate, lAccelHandler.getZ(),
-                    lAccelHandler.getLongTermAverage(), upper,lower);
+                    lAccelHandler.getFilteredZ(), upper,lower);
 
             sensorData.add(data);
 
@@ -55,9 +57,9 @@ public class AlertMonitor {
             }
 
             Vibrator v = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
-            if ((lAccelHandler.getLongTermAverage() > upper) && prefsHandler.getvibrateFwdOn()) {
+            if ((lAccelHandler.getFilteredZ() > upper) && prefsHandler.getvibrateFwdOn()) {
                 v.vibrate(vpatternf, -1);
-            } else if ((lAccelHandler.getLongTermAverage() < lower) &&
+            } else if ((lAccelHandler.getFilteredZ() < lower) &&
                     prefsHandler.getvibrateBwdOn()) {
                 v.vibrate(vpatternb, -1);
             }

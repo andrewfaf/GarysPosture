@@ -37,6 +37,7 @@ import android.view.MenuItem;
 */
 
 /* To Do
+todo    Add statistics and tracking to show progress over time as per Penny Suggestion
 todo    Change to a service for phones that don't need the screen on.
 todo    Need to be able to select a saved data set and graph it
 todo    Need to be able to select a group of data sets (or one) and email csv formatted versions
@@ -119,7 +120,7 @@ public class MainActivity extends Activity implements OnClickListener {
         @Override
         public void run() {
 
-            txtAvg.setText(String.format("%.2f",laccelHandler.getLongTermAverage()));
+            txtAvg.setText(String.format("%.2f",laccelHandler.getFilteredZ()));
             mHandler.postDelayed(this,500);
         }
     };
@@ -154,6 +155,7 @@ public class MainActivity extends Activity implements OnClickListener {
         WindowManager.LayoutParams lp;
         switch (v.getId()) {
             case R.id.btnStart:
+                Log.d("Gary:", "MainActivity Start Button");
                 btnStart.setEnabled(false);
                 btnStop.setEnabled(true);
                 btnGraph.setEnabled(false);
@@ -167,7 +169,7 @@ public class MainActivity extends Activity implements OnClickListener {
                 laccelHandler = AccelHandler.getInstance(this,prefsHandler.getUpdatesInterval());
                 laccelHandler.startAccel();
                 mHandler.post(mrunnable);
-/*
+
                 if (prefsHandler.getKeepScreenOn()){
                     w.addFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
                     lp = w.getAttributes();
@@ -177,17 +179,20 @@ public class MainActivity extends Activity implements OnClickListener {
 // and you can't easily turn it back on
                     w.setAttributes(lp);
                 }
-*/
+
 
                 break;
             case R.id.btnStop:
+                Log.d("Gary:", "MainActivity Stop Button");
                 btnStart.setEnabled(true);
                 btnStop.setEnabled(false);
                 btnGraph.setEnabled(true);
                 started = false;
                 alertMonitor.killHandlers();
                 mHandler.removeCallbacks(mrunnable);
-/*
+                laccelHandler.getSessionAverageZ();
+                laccelHandler.stopAccel();
+
                 if (prefsHandler.getKeepScreenOn()) {
                     w.clearFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
                     w = getWindow();
@@ -196,10 +201,10 @@ public class MainActivity extends Activity implements OnClickListener {
                     w.setAttributes(lp);
                 }
 
-*/
-                    fileHandler.closeFile();
+                fileHandler.closeFile();
                 break;
             case R.id.btnGraph:
+                Log.d("Gary:", "MainActivity Graph Button");
                 Intent i = new Intent(this, GraphActivity.class);
                 i.putExtra("data", alertMonitor.sensorData);
                 startActivity(i);

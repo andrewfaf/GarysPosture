@@ -21,6 +21,7 @@ public class FileHandler {
 
     private static FileHandler singletonFileHandler;
     private FileHandler(Context mconext){
+        Log.d("Gary:", "FileHandler object created");
         try {
             createFile(mconext);
         } catch (IOException e) {
@@ -31,6 +32,7 @@ public static FileHandler getInstance(Context mcontext){
     if(singletonFileHandler == null){
         singletonFileHandler = new FileHandler(mcontext);
     }
+    Log.d("Gary:", "FileHandler object returned");
     return singletonFileHandler;
 }
 
@@ -49,6 +51,7 @@ public static FileHandler getInstance(Context mcontext){
                 extDir.mkdir();
             }
 
+            Log.d("Gary:", "FileHandler " + extDir + "/" + FILENAME + dateString + ".csv");
             fos = new FileOutputStream(extDir + "/" + FILENAME + dateString + ".csv",true);
         } else{
             extDir = new File(mcontext.getFilesDir(),FILENAME + dateString + ".csv");
@@ -85,6 +88,7 @@ public static FileHandler getInstance(Context mcontext){
         } catch (IOException e) {
             e.printStackTrace();
         }
+        singletonFileHandler = null;
     }
 
 }
