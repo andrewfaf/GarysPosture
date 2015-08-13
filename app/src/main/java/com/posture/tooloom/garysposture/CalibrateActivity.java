@@ -73,7 +73,7 @@ public class CalibrateActivity extends Activity {
         public void run() {
             long[] vpattern = {0, 200, 100, 400, 100, 200, 0};
             Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-            Log.d("Gary:", "delayFlag is " + delayFlag);
+//            Log.d("Gary:", "delayFlag is " + delayFlag);
             if(!delayFlag){
                 delayFlag = true;
                 v.vibrate(vpattern, -1);

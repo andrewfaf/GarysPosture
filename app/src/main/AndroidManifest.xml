@@ -38,6 +38,8 @@
             <intent-filter>
                 <action android:name="android.intent.action.SCREEN_OFF">
                 </action>
+                <action android:name="android.intent.action.SCREEN_ON">
+                </action>
             </intent-filter>
         </receiver>
     </application>

@@ -45,7 +45,7 @@ public class AccelHandler implements SensorEventListener{
 
         accel = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         Log.d("Gary:", "AccelHandler create Object");
-        startAccel();
+//        startAccel();
 
     }
 
@@ -96,6 +96,9 @@ public class AccelHandler implements SensorEventListener{
             Log.d("Gary:", "AccelHandler restartAccel");
         }
     }
+    public boolean getStarted(){
+        return started;
+    }
     public double getFilteredZ(){
         return filteredZ;
     }
@@ -126,7 +129,7 @@ public double getSessionTimeTotal(){
     @Override
     public void onSensorChanged(SensorEvent event) {
         if (started) {
-            Log.d("Gary:", "AccelHandler Triggered");
+            Log.d("Gary:", "AccelHandler Triggered " + System.currentTimeMillis());
             if ((System.currentTimeMillis() - lastSaved) > sampleTime) {
                 lastSaved = System.currentTimeMillis();
                 z = event.values[2];

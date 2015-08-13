@@ -119,8 +119,10 @@ public class MainActivity extends Activity implements OnClickListener {
     private Runnable mrunnable = new Runnable() {
         @Override
         public void run() {
-
-            txtAvg.setText(String.format("%.2f",laccelHandler.getFilteredZ()));
+            if(laccelHandler.getStarted() && mScreenOffReceiver.getScreenState()){
+                laccelHandler.restartAccel();
+            }
+            txtAvg.setText(String.format("%.2f", laccelHandler.getFilteredZ()));
             mHandler.postDelayed(this,500);
         }
     };
@@ -141,7 +143,7 @@ public class MainActivity extends Activity implements OnClickListener {
     public void onDestroy() {
         super.onDestroy();
         alertMonitor.killHandlers();
-        if (started) {
+        if (laccelHandler.getStarted()) {
             fileHandler.closeFile();
         }
         unregisterReceiver(mScreenOffReceiver);
@@ -163,7 +165,7 @@ public class MainActivity extends Activity implements OnClickListener {
                 alertMonitor = new AlertMonitor(this);
                 prefsHandler = PrefsHandler.getInstance(this);
                 mHandler = new Handler();
-                started = true;
+//                started = true;
                 // Wait 5 seconds before starting.
                 alertMonitor.startHandlers();
                 laccelHandler = AccelHandler.getInstance(this,prefsHandler.getUpdatesInterval());
