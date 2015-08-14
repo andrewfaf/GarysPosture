@@ -15,4 +15,6 @@
     <string name="title_activity_calibrate">CalibrateActivity</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_graph">GraphActivity</string>
+    <string name="title_activity_statistics">StatisticsActivity</string>
+    <string name="Statistics">STATISTICS</string>
 </resources>

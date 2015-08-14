@@ -2,46 +2,56 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.posture.tooloom.garysposture" >
 
-    <uses-permission android:name="android.permission.VIBRATE"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme" >
         <activity
             android:name=".MainActivity"
-            android:label="@string/title_activity_main">
+            android:label="@string/title_activity_main" >
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".PrefsActivity">
+        <activity android:name=".PrefsActivity" >
         </activity>
         <activity
             android:name=".CalibrateActivity"
-            android:label="@string/title_activity_calibrate">
+            android:label="@string/title_activity_calibrate" >
         </activity>
         <activity
             android:name=".GraphActivity"
-            android:label="@string/title_activity_graph"
-            >
+            android:label="@string/title_activity_graph" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.posture.tooloom.garysposture.MainActivity"/>
+                android:value="com.posture.tooloom.garysposture.MainActivity" />
         </activity>
-        <receiver android:name=".screenOffReceiver">
+
+        <receiver android:name=".screenOffReceiver" >
             <intent-filter>
-                <action android:name="android.intent.action.SCREEN_OFF">
+                <action android:name="android.intent.action.SCREEN_OFF" >
                 </action>
-                <action android:name="android.intent.action.SCREEN_ON">
+                <action android:name="android.intent.action.SCREEN_ON" >
                 </action>
             </intent-filter>
         </receiver>
+
+        <activity
+            android:name=".StatisticsActivity"
+            android:label="@string/title_activity_statistics"
+            android:parentActivityName=".MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.posture.tooloom.garysposture.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

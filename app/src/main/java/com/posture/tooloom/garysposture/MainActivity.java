@@ -45,11 +45,10 @@ todo    Drop Box or Google Drive the files
 */
 
 public class MainActivity extends Activity implements OnClickListener {
-    private Button btnStart, btnStop, btnGraph;
+    private Button btnStart, btnStop, btnGraph, btnStats;
     private TextView txtAvg;
 
     private static float brightness = 0.1f;
-    private boolean started = false;
 
     AlertMonitor alertMonitor;
     PrefsHandler prefsHandler;
@@ -57,6 +56,7 @@ public class MainActivity extends Activity implements OnClickListener {
     AccelHandler laccelHandler;
     screenOffReceiver mScreenOffReceiver;
     private static Handler mHandler;
+    StatisticsHandler statisticsHandler;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -64,25 +64,28 @@ public class MainActivity extends Activity implements OnClickListener {
         setContentView(R.layout.activity_main);
 
         btnStart = (Button) findViewById(R.id.btnStart);
-        btnStop = (Button) findViewById(R.id.btnStop);
-        btnGraph = (Button) findViewById(R.id.btnGraph);
-
         btnStart.setEnabled(true);
-        btnStop.setEnabled(false);
-
         btnStart.setOnClickListener(this);
+
+        btnStop = (Button) findViewById(R.id.btnStop);
+        btnStop.setEnabled(false);
         btnStop.setOnClickListener(this);
-        btnGraph.setOnClickListener(this);
+
+        btnGraph = (Button) findViewById(R.id.btnGraph);
         btnGraph.setEnabled(false);
+        btnGraph.setOnClickListener(this);
+
+        btnStats = (Button) findViewById(R.id.btnStatistics);
+        btnStats.setEnabled(false);
+        btnStats.setOnClickListener(this);
 
         txtAvg = (TextView) findViewById(R.id.textView);
 
         mScreenOffReceiver = new screenOffReceiver();
         IntentFilter screenStateFilter = new IntentFilter();
         screenStateFilter.addAction(Intent.ACTION_SCREEN_OFF);
+        screenStateFilter.addAction(Intent.ACTION_SCREEN_ON);
         registerReceiver(mScreenOffReceiver, screenStateFilter);
-
-//        Toast.makeText(this, "Calibrated Value is " + calibratedZ, Toast.LENGTH_LONG).show();
 
     }
 
@@ -132,11 +135,6 @@ public class MainActivity extends Activity implements OnClickListener {
     protected void onPause() {
         super.onPause();
         Log.d("Gary:", "MainActivity onPause");
-/*
-        if (started) {
-                fileHandler.closeFile();
-            }
-*/
     }
 
     @Override
@@ -164,8 +162,8 @@ public class MainActivity extends Activity implements OnClickListener {
                 fileHandler = FileHandler.getInstance(this);
                 alertMonitor = new AlertMonitor(this);
                 prefsHandler = PrefsHandler.getInstance(this);
+                statisticsHandler = StatisticsHandler.getInstance(this);
                 mHandler = new Handler();
-//                started = true;
                 // Wait 5 seconds before starting.
                 alertMonitor.startHandlers();
                 laccelHandler = AccelHandler.getInstance(this,prefsHandler.getUpdatesInterval());
@@ -189,11 +187,12 @@ public class MainActivity extends Activity implements OnClickListener {
                 btnStart.setEnabled(true);
                 btnStop.setEnabled(false);
                 btnGraph.setEnabled(true);
-                started = false;
+                btnStats.setEnabled(true);
                 alertMonitor.killHandlers();
                 mHandler.removeCallbacks(mrunnable);
                 laccelHandler.getSessionAverageZ();
                 laccelHandler.stopAccel();
+                statisticsHandler.updateStatistics();
 
                 if (prefsHandler.getKeepScreenOn()) {
                     w.clearFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -207,9 +206,14 @@ public class MainActivity extends Activity implements OnClickListener {
                 break;
             case R.id.btnGraph:
                 Log.d("Gary:", "MainActivity Graph Button");
-                Intent i = new Intent(this, GraphActivity.class);
-                i.putExtra("data", alertMonitor.sensorData);
-                startActivity(i);
+                Intent iG = new Intent(this, GraphActivity.class);
+                iG.putExtra("data", alertMonitor.sensorData);
+                startActivity(iG);
+                break;
+            case R.id.btnStatistics:
+                Log.d("Gary:", "MainActivity Stats Button");
+                Intent iS = new Intent(this, StatisticsActivity.class);
+                startActivity(iS);
                 break;
             default:
                 break;

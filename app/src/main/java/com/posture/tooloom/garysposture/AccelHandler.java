@@ -123,9 +123,19 @@ public class AccelHandler implements SensorEventListener{
         Log.d("Gary:", "Samples Below Backward Threshold " + samplesbwd);
         return (getAverageZ() - calibratedZ);
     }
-public double getSessionTimeTotal(){
-    return sessionTimeTotal;
+    public double getSessionTimeTotal(){
+        return sessionTimeTotal;
 }
+    public double getSamplesFwd(){
+        return samplesfwd;
+    }
+    public double getSamplesBwd(){
+        return samplesbwd;
+    }
+    public double getAvgSampleTime(){
+        return getSessionTimeTotal()/zcount;
+    }
+
     @Override
     public void onSensorChanged(SensorEvent event) {
         if (started) {

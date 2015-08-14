@@ -6,8 +6,9 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:id="@+id/buttons"
         android:orientation="horizontal"
-        android:id="@+id/buttons" >
+        >
 
         <Button
             android:id="@+id/btnStart"
@@ -23,12 +24,6 @@
             android:layout_weight="1"
             android:text="@string/btnStop_text" />
 
-        <Button
-            android:id="@+id/btnGraph"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/btnGraph_text" />
     </LinearLayout>
 
     <TextView
@@ -38,7 +33,34 @@
         android:id="@+id/textView"
         android:textSize="120dp"
         android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"/>
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/textView">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/Statistics"
+            android:id="@+id/btnStatistics"
+            android:layout_gravity="bottom"
+            android:layout_weight="1"/>
+
+        <Button
+            android:id="@+id/btnGraph"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/btnGraph_text"
+            android:layout_gravity="bottom"/>
+    </LinearLayout>
 
 
 </RelativeLayout>
