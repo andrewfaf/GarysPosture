@@ -139,7 +139,7 @@ public class AccelHandler implements SensorEventListener{
     @Override
     public void onSensorChanged(SensorEvent event) {
         if (started) {
-            Log.d("Gary:", "AccelHandler Triggered " + System.currentTimeMillis());
+//            Log.d("Gary:", "AccelHandler Triggered " + System.currentTimeMillis());
             if ((System.currentTimeMillis() - lastSaved) > sampleTime) {
                 lastSaved = System.currentTimeMillis();
                 z = event.values[2];

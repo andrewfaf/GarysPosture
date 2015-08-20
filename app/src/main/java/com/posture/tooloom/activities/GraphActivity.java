@@ -1,4 +1,4 @@
-package com.posture.tooloom.garysposture;
+package com.posture.tooloom.activities;
 
 import android.app.Activity;
 import android.graphics.Color;
@@ -7,6 +7,9 @@ import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.LinearLayout;
+
+import com.posture.tooloom.garysposture.AccelData;
+import com.posture.tooloom.garysposture.R;
 
 import org.achartengine.ChartFactory;
 import org.achartengine.chart.PointStyle;

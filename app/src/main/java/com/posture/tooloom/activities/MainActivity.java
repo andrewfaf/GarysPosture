@@ -1,4 +1,4 @@
-package com.posture.tooloom.garysposture;
+package com.posture.tooloom.activities;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -14,6 +14,14 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import com.posture.tooloom.garysposture.AccelHandler;
+import com.posture.tooloom.garysposture.AlertMonitor;
+import com.posture.tooloom.garysposture.FileHandler;
+import com.posture.tooloom.garysposture.PrefsHandler;
+import com.posture.tooloom.garysposture.R;
+import com.posture.tooloom.garysposture.StatisticsHandler;
+import com.posture.tooloom.garysposture.screenOffReceiver;
 
 
 
@@ -58,6 +66,7 @@ public class MainActivity extends Activity implements OnClickListener {
     private static Handler mHandler;
     StatisticsHandler statisticsHandler;
 
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,6 +95,7 @@ public class MainActivity extends Activity implements OnClickListener {
         screenStateFilter.addAction(Intent.ACTION_SCREEN_OFF);
         screenStateFilter.addAction(Intent.ACTION_SCREEN_ON);
         registerReceiver(mScreenOffReceiver, screenStateFilter);
+
 
     }
 
@@ -162,7 +172,7 @@ public class MainActivity extends Activity implements OnClickListener {
                 fileHandler = FileHandler.getInstance(this);
                 alertMonitor = new AlertMonitor(this);
                 prefsHandler = PrefsHandler.getInstance(this);
-                statisticsHandler = StatisticsHandler.getInstance(this);
+                statisticsHandler = StatisticsHandler.getInstance(this, alertMonitor.sensorData);
                 mHandler = new Handler();
                 // Wait 5 seconds before starting.
                 alertMonitor.startHandlers();
@@ -213,6 +223,7 @@ public class MainActivity extends Activity implements OnClickListener {
             case R.id.btnStatistics:
                 Log.d("Gary:", "MainActivity Stats Button");
                 Intent iS = new Intent(this, StatisticsActivity.class);
+                iS.putExtra("data", alertMonitor.sensorData);
                 startActivity(iS);
                 break;
             default:

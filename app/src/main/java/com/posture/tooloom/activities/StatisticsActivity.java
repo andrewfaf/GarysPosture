@@ -1,4 +1,4 @@
-package com.posture.tooloom.garysposture;
+package com.posture.tooloom.activities;
 
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -6,13 +6,22 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import com.posture.tooloom.garysposture.AccelData;
+import com.posture.tooloom.garysposture.AccelHandler;
+import com.posture.tooloom.garysposture.R;
+import com.posture.tooloom.garysposture.StatisticsHandler;
+
+import java.util.ArrayList;
+
 
 public class StatisticsActivity extends ActionBarActivity {
+    ArrayList<AccelData> sensorData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_statistics);
+        sensorData = (ArrayList<AccelData>)getIntent().getSerializableExtra("data");
         AccelHandler accelHandler = AccelHandler.getInstance(this, 100);
         TextView sessionTime = (TextView) findViewById(R.id.totalSessionTimetextView);
         sessionTime.setText(String.format("Session Time %.0f sec",
@@ -28,9 +37,9 @@ public class StatisticsActivity extends ActionBarActivity {
 
         TextView aboveBWDThreshold = (TextView) findViewById(R.id.timeOverBWDThresholdtextView);
         aboveBWDThreshold.setText(String.format("Backward %.0f sec",
-                accelHandler.getSamplesBwd()*accelHandler.getAvgSampleTime()/1000));
+                accelHandler.getSamplesBwd() * accelHandler.getAvgSampleTime() / 1000));
 
-        StatisticsHandler statisticsHandler = StatisticsHandler.getInstance(this);
+        StatisticsHandler statisticsHandler = StatisticsHandler.getInstance(this, sensorData);
         TextView daySessionTime = (TextView) findViewById(R.id.daySessionTimetextView);
         daySessionTime.setText(String.format("Session Time %.0f sec",
                 statisticsHandler.getDaySampleTime()/1000));
