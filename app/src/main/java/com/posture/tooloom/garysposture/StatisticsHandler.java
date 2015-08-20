@@ -49,15 +49,15 @@ public class StatisticsHandler {
         dayAboveBwd += accelHandler.getSamplesBwd();
 
         ContentValues values = new ContentValues();
-        values.put(ProgressTable.COLUMN_SAMPLES, 100);
-        values.put(ProgressTable.COLUMN_START_TIME,
-                String.valueOf(sensorData.get(0).getTimestamp()));
-        values.put(ProgressTable.COLUMN_STOP_TIME,
-                String.valueOf(sensorData.get(0).getTimestamp()));
-        values.put(ProgressTable.COLUMN_SESSION_TIME,100);
-        values.put(ProgressTable.COLUMN_TIME_FORWARD,100);
+        values.put(ProgressTable.COLUMN_SAMPLES, (int)accelHandler.getTotalSamples());
+        values.put(ProgressTable.COLUMN_START_TIME,accelHandler.getSessionTimeStart());
+        values.put(ProgressTable.COLUMN_STOP_TIME,accelHandler.getSessionTimeStop());
+        values.put(ProgressTable.COLUMN_SESSION_TIME,accelHandler.getSessionTimeTotal());
+        values.put(ProgressTable.COLUMN_TIME_FORWARD,
+                (int)(accelHandler.getSamplesFwd()* accelHandler.getAvgSampleTime()/1000));
         values.put(ProgressTable.COLUMN_SAMPLES_FORWARD, (int)(accelHandler.getSamplesFwd()));
-        values.put(ProgressTable.COLUMN_TIME_BACKWARD,100);
+        values.put(ProgressTable.COLUMN_TIME_BACKWARD,
+                (int)(accelHandler.getSamplesBwd()* accelHandler.getAvgSampleTime()/1000));
         values.put(ProgressTable.COLUMN_SAMPLES_BACKWARD, (int)(accelHandler.getSamplesBwd()));
 
         long newRowId = progressDb.insert(

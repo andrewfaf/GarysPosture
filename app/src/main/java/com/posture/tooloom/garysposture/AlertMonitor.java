@@ -44,7 +44,7 @@ public class AlertMonitor {
 
             Log.d("Gary:", "AlertMonitor Triggered");
             AccelData data = new AccelData(resultDate, lAccelHandler.getZ(),
-                    lAccelHandler.getFilteredZ(), upper,lower);
+                    lAccelHandler.getFilteredZ(), upper,lower, currentTime);
 
             sensorData.add(data);
 

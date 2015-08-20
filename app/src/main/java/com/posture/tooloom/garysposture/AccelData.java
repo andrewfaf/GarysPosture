@@ -9,15 +9,17 @@ public class AccelData implements Serializable {
 	private double z;
 	private double longtermz;
 	private double upper, lower;
+	private long timestampms;
 	
 	
-	
-	public AccelData(Date timestamp, double z, double longtermz, double upper, double lower) {
+	public AccelData(Date timestamp, double z, double longtermz, double upper, double lower,
+					 long timestampms) {
 		this.timestamp = timestamp;
 		this.z = z;
 		this.longtermz = longtermz;
 		this.upper = upper;
 		this.lower = lower;
+		this.timestampms = timestampms;
 	}
 	public Date getTimestamp() {
 		return timestamp;
@@ -34,6 +36,7 @@ public class AccelData implements Serializable {
 	public double getLower() {
 		return lower;
 	}
+	public long getTimestampms() { return timestampms; }
 
 	public String toString()
 	{

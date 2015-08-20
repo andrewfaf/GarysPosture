@@ -25,7 +25,8 @@ public class AccelHandler implements SensorEventListener{
     private double z = 0;
     private double zcount = 0;
     private double sessionTimeTotal;
-    private double sessionTimeStart;
+    private long sessionTimeStart;
+    private long sessionTimeStop;
     private PrefsHandler prefsHandler;
     private double sampleTime;
     private double aws;
@@ -77,7 +78,8 @@ public class AccelHandler implements SensorEventListener{
     public void stopAccel(){
         started = false;
         sensorManager.unregisterListener(this);
-        sessionTimeTotal = System.currentTimeMillis() - sessionTimeStart;
+        sessionTimeStop = System.currentTimeMillis();
+        sessionTimeTotal =  sessionTimeStop - sessionTimeStart;
 //        singletonAccelHandler = null;
         Log.d("Gary:", "AccelHandler stopAccel");
     }
@@ -105,7 +107,6 @@ public class AccelHandler implements SensorEventListener{
     public double getZ(){
         return z;
     }
-
     public double getAverageZ (){
         Log.d("Gary:" , "Number of samples " + zcount);
         double avgZ;
@@ -123,18 +124,15 @@ public class AccelHandler implements SensorEventListener{
         Log.d("Gary:", "Samples Below Backward Threshold " + samplesbwd);
         return (getAverageZ() - calibratedZ);
     }
-    public double getSessionTimeTotal(){
-        return sessionTimeTotal;
-}
-    public double getSamplesFwd(){
-        return samplesfwd;
-    }
+    public double getSessionTimeTotal(){ return sessionTimeTotal; }
+    public double getTotalSamples() { return zcount; }
+    public double getSamplesFwd(){ return samplesfwd; }
     public double getSamplesBwd(){
         return samplesbwd;
     }
-    public double getAvgSampleTime(){
-        return getSessionTimeTotal()/zcount;
-    }
+    public double getAvgSampleTime(){ return getSessionTimeTotal()/zcount; }
+    public long getSessionTimeStart(){ return sessionTimeStart; }
+    public long getSessionTimeStop(){ return sessionTimeStop; }
 
     @Override
     public void onSensorChanged(SensorEvent event) {
