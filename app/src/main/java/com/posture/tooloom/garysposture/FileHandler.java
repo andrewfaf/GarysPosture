@@ -6,6 +6,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -52,7 +53,11 @@ public static FileHandler getInstance(Context mcontext){
             }
 
             Log.d("Gary:", "FileHandler " + extDir + "/" + FILENAME + dateString + ".csv");
-            fos = new FileOutputStream(extDir + "/" + FILENAME + dateString + ".csv",true);
+            try {
+                fos = new FileOutputStream(extDir + "/" + FILENAME + dateString + ".csv",true);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
         } else{
             extDir = new File(mcontext.getFilesDir(),FILENAME + dateString + ".csv");
             fos = new FileOutputStream(extDir);

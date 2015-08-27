@@ -3,6 +3,7 @@ package com.posture.tooloom.db;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 /**
  * Created by fraw on 18/08/2015.
@@ -24,6 +25,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
-        ProgressTable.onUpgrade(sqLiteDatabase,i,i1);
+        ProgressTable.onUpgrade(sqLiteDatabase, i, i1);
     }
 }

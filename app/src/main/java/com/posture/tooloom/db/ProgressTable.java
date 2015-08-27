@@ -8,7 +8,7 @@ import android.util.Log;
  */
 public class ProgressTable {
     // Table
-    public static final String TABLE_PROGRESS = "progress";
+    public static final String TABLE_NAME = "progress";
     public static final String COLUMN_ID = "_id";
     public static final String COLUMN_SAMPLES = "samples";
     public static final String COLUMN_START_TIME = "starttime";
@@ -21,8 +21,8 @@ public class ProgressTable {
 
     // Create SQL statement
     private static final String DATABASE_CREATE = "create table "
-            + TABLE_PROGRESS
-            + "("
+            + TABLE_NAME
+            + " ("
             + COLUMN_ID + " integer primary key autoincrement, "
             + COLUMN_SAMPLES + " numeric not null, "
             + COLUMN_START_TIME + " timestamp not null, "
@@ -32,17 +32,20 @@ public class ProgressTable {
             + COLUMN_SAMPLES_FORWARD + " integer not null, "
             + COLUMN_TIME_BACKWARD + " integer not null, "
             + COLUMN_SAMPLES_BACKWARD + " integer not null "
-            + ");";
+            + ")";
 
     public static void onCreate(SQLiteDatabase sqLiteDatabase) {
         sqLiteDatabase.execSQL(DATABASE_CREATE);
+        Log.i("Gary:", "Table has been created");
     }
 
     public static void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
         Log.w(DatabaseHandler.class.getName(), "Upgrading database from version "
                 + i + " to " + i1 + ", which will destroy all old data");
-        sqLiteDatabase.execSQL(("DROP TABLE IF EXISTS ") + TABLE_PROGRESS);
+        sqLiteDatabase.execSQL(("DROP TABLE IF EXISTS ") + TABLE_NAME);
         onCreate(sqLiteDatabase);
+        Log.i("Gary:", "Table has been upgraded");
     }
+
 
 }

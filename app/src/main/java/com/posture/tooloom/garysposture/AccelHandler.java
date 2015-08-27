@@ -1,26 +1,38 @@
 package com.posture.tooloom.garysposture;
 
 import android.content.Context;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
-import android.util.Log;
+//import android.hardware.Sensor;
+//import android.hardware.SensorEvent;
+//import android.hardware.SensorEventListener;
+//import android.hardware.SensorManager;
+import org.openintents.sensorsimulator.hardware.SensorManagerSimulator;
+import org.openintents.sensorsimulator.hardware.Sensor;
+import org.openintents.sensorsimulator.hardware.SensorEvent;
 
+import android.util.Log;
 import java.util.ArrayList;
+
+import static android.content.Context.SENSOR_SERVICE;
 
 /**
  * Created by fraw on 2/07/2015.
  * Implements accelerometer handler
  */
-public class AccelHandler implements SensorEventListener{
+//public class AccelHandler implements SensorEventListener {
+    public class AccelHandler implements org.openintents.sensorsimulator.hardware.SensorEventListener {
+
     private static AccelHandler singletonAccelHandler;
+/*
     private SensorManager sensorManager;
+    private Sensor accel;
+*/
+
+    private  SensorManagerSimulator sensorManager;
+    private org.openintents.sensorsimulator.hardware.Sensor accel;
+
     private boolean started = false;
     private long lastSaved = System.currentTimeMillis();
-    private ArrayList<AccelData> sensorData;
     private double filteredZ = 0;
-    private Sensor accel;
     private double totalZ = 0;
     private double z = 0;
     private double zcount = 0;
@@ -37,7 +49,10 @@ public class AccelHandler implements SensorEventListener{
     private double samplesbwd;
 
     private AccelHandler (Context mContext,double sampleTime) {
-        sensorManager = (SensorManager)mContext.getSystemService(Context.SENSOR_SERVICE);
+//        sensorManager = (SensorManager)mContext.getSystemService(Context.SENSOR_SERVICE);
+        sensorManager = SensorManagerSimulator.getSystemService(mContext, SENSOR_SERVICE);
+        sensorManager.connectSimulator();
+
         prefsHandler = PrefsHandler.getInstance(mContext);
 
         this.sampleTime = sampleTime;
@@ -46,7 +61,6 @@ public class AccelHandler implements SensorEventListener{
 
         accel = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         Log.d("Gary:", "AccelHandler create Object");
-//        startAccel();
 
     }
 
@@ -61,8 +75,8 @@ public class AccelHandler implements SensorEventListener{
         samplesbwd =0;
         sessionTimeStart = System.currentTimeMillis();
 
-        sensorManager.registerListener(this, accel,
-                SensorManager.SENSOR_DELAY_NORMAL);
+//        sensorManager.registerListener(this, accel, SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, accel, SensorManagerSimulator.SENSOR_DELAY_NORMAL);
         Log.d("Gary:", "AccelHandler startAccel");
 
     }
@@ -93,8 +107,8 @@ public class AccelHandler implements SensorEventListener{
 
     public void restartAccel(){
         if (started) {
-            sensorManager.registerListener(this, accel,
-                    SensorManager.SENSOR_DELAY_NORMAL);
+//            sensorManager.registerListener(this, accel, SensorManager.SENSOR_DELAY_NORMAL);
+            sensorManager.registerListener(this, accel, SensorManagerSimulator.SENSOR_DELAY_NORMAL);
             Log.d("Gary:", "AccelHandler restartAccel");
         }
     }
@@ -161,4 +175,5 @@ public class AccelHandler implements SensorEventListener{
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
     }
+
 }

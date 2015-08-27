@@ -25,5 +25,6 @@ dependencies {
     compile 'com.android.support:appcompat-v7:22.2.+'
     compile 'org.achartengine:achartengine:1.2.0'
     compile 'com.opencsv:opencsv:3.4'
+    compile files('C:/Users/fraw/Google Drive/ASF/Android Studio/GarysPosture/sensorsimulator-lib-2.0-rc1.jar')
 }
 apply from: "../artifacts.gradle"

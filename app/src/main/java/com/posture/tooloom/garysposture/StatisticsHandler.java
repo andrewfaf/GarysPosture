@@ -2,8 +2,8 @@ package com.posture.tooloom.garysposture;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.os.Bundle;
 import android.util.Log;
 
 import com.posture.tooloom.db.DatabaseHandler;
@@ -32,38 +32,66 @@ public class StatisticsHandler {
         this.sensorData = sensorData;
 
     }
-    public static StatisticsHandler getInstance(Context mcontext, ArrayList<AccelData> sensorData){
-        if (singletonStatisticsHandler == null){
+
+    public static StatisticsHandler getInstance(Context mcontext, ArrayList<AccelData> sensorData) {
+        if (singletonStatisticsHandler == null) {
             singletonStatisticsHandler = new StatisticsHandler(mcontext, sensorData);
         }
         Log.d("Gary:", "Statistics Handler getInstance");
         return singletonStatisticsHandler;
     }
-    public void updateStatistics(){
+
+    public void updateStatistics() {
         progressDbHelper = new DatabaseHandler(mcontext);
         SQLiteDatabase progressDb = progressDbHelper.getWritableDatabase();
 
-        AccelHandler accelHandler = AccelHandler.getInstance(mcontext,100);
+        AccelHandler accelHandler = AccelHandler.getInstance(mcontext, 100);
         daySampleTime += accelHandler.getSessionTimeTotal();
         dayAboveFwd += accelHandler.getSamplesFwd();
         dayAboveBwd += accelHandler.getSamplesBwd();
 
         ContentValues values = new ContentValues();
-        values.put(ProgressTable.COLUMN_SAMPLES, (int)accelHandler.getTotalSamples());
-        values.put(ProgressTable.COLUMN_START_TIME,accelHandler.getSessionTimeStart());
-        values.put(ProgressTable.COLUMN_STOP_TIME,accelHandler.getSessionTimeStop());
-        values.put(ProgressTable.COLUMN_SESSION_TIME,accelHandler.getSessionTimeTotal());
+        values.put(ProgressTable.COLUMN_SAMPLES, (int) accelHandler.getTotalSamples());
+        values.put(ProgressTable.COLUMN_START_TIME, accelHandler.getSessionTimeStart());
+        values.put(ProgressTable.COLUMN_STOP_TIME, accelHandler.getSessionTimeStop());
+        values.put(ProgressTable.COLUMN_SESSION_TIME, accelHandler.getSessionTimeTotal());
         values.put(ProgressTable.COLUMN_TIME_FORWARD,
-                (int)(accelHandler.getSamplesFwd()* accelHandler.getAvgSampleTime()/1000));
-        values.put(ProgressTable.COLUMN_SAMPLES_FORWARD, (int)(accelHandler.getSamplesFwd()));
+                (int) (accelHandler.getSamplesFwd() * accelHandler.getAvgSampleTime() / 1000));
+        values.put(ProgressTable.COLUMN_SAMPLES_FORWARD, (int) (accelHandler.getSamplesFwd()));
         values.put(ProgressTable.COLUMN_TIME_BACKWARD,
-                (int)(accelHandler.getSamplesBwd()* accelHandler.getAvgSampleTime()/1000));
-        values.put(ProgressTable.COLUMN_SAMPLES_BACKWARD, (int)(accelHandler.getSamplesBwd()));
+                (int) (accelHandler.getSamplesBwd() * accelHandler.getAvgSampleTime() / 1000));
+        values.put(ProgressTable.COLUMN_SAMPLES_BACKWARD, (int) (accelHandler.getSamplesBwd()));
 
         long newRowId = progressDb.insert(
-                ProgressTable.TABLE_PROGRESS,
+                ProgressTable.TABLE_NAME,
                 null,
                 values);
+
+        SQLiteDatabase testDb = progressDbHelper.getReadableDatabase();
+        String[] projection = {
+                ProgressTable.COLUMN_ID,
+                ProgressTable.COLUMN_SAMPLES,
+                ProgressTable.COLUMN_START_TIME,
+                ProgressTable.COLUMN_STOP_TIME
+        };
+
+        Cursor c = testDb.query(
+                ProgressTable.TABLE_NAME,
+                projection,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+//        c.moveToFirst();
+        Log.i("Gary:", "Returned " + c.getCount() + " rows");
+        c.moveToPosition((int) newRowId - 1);
+        long samples = c.getLong(
+                c.getColumnIndexOrThrow(ProgressTable.COLUMN_SAMPLES)
+        );
+        Log.d("Gary:", "Statistics Handler read Samples from DB = " + samples);
+
     }
     public double getDaySampleTime(){
         return daySampleTime;
