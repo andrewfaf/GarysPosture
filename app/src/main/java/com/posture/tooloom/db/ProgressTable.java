@@ -18,6 +18,8 @@ public class ProgressTable {
     public static final String COLUMN_TIME_BACKWARD = "timebackward";
     public static final String COLUMN_SAMPLES_FORWARD = "samplesforward";
     public static final String COLUMN_SAMPLES_BACKWARD = "samplesbackward";
+    public static final String COLUMN_START_TIME_FORMATTED =
+            "(strftime('%s',starttime) * 1000) AS starttime";
 
     // Create SQL statement
     private static final String DATABASE_CREATE = "create table "

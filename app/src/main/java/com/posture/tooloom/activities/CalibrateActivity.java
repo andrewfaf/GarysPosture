@@ -8,16 +8,11 @@ import android.os.Handler;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
-
 import com.posture.tooloom.garysposture.AccelHandler;
 import com.posture.tooloom.garysposture.R;
 
-import static java.lang.StrictMath.abs;
 
 
 public class CalibrateActivity extends Activity {

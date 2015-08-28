@@ -8,6 +8,7 @@ import android.util.Log;
 
 import com.posture.tooloom.db.DatabaseHandler;
 import com.posture.tooloom.db.ProgressTable;
+import com.posture.tooloom.garysposture.AccelHandler;
 
 import java.util.ArrayList;
 
@@ -91,6 +92,7 @@ public class StatisticsHandler {
                 c.getColumnIndexOrThrow(ProgressTable.COLUMN_SAMPLES)
         );
         Log.d("Gary:", "Statistics Handler read Samples from DB = " + samples);
+        Log.d("Gary:", "Statistics Handler read Start time from DB = " + c.getString(c.getColumnIndexOrThrow(ProgressTable.COLUMN_START_TIME)));
 
     }
     public double getDaySampleTime(){
